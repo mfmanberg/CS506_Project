@@ -1,105 +1,122 @@
 import duckdb
 import pandas as pd
 import xgboost as xgb
-from sklearn.metrics import root_mean_squared_error, r2_score
+from sklearn.metrics import root_mean_squared_error, r2_score, mean_absolute_error
 import matplotlib.pyplot as plt
-from xgboost.callback import EarlyStopping
-from sklearn.metrics import mean_absolute_error
+
+# ==========================================================================
+# CONFIG SECTION — change only this part to parametrize effectively
+# ==========================================================================
+CONFIG = {
+    # You can use parquet wildcard like parquet_scan('nyiso_dataset/**/*.parquet') or a single CSV
+    "data_path": r"C:\code\python\nyiso_project\CS506_Project\3_OUTPUT\ActualData\20250919pal.csv",
+
+    # Station name
+    "station": "LONGIL",
+
+    # Lag values (depends on dataset frequency)
+    "lags": [1, 7, 30],
+
+    # Year splits
+    "train_start": 2001,
+    "train_end": 2021,
+    "val_year": 2022,
+    "test_years": [2023, 2024, 2025],
+
+    # Model params
+    "model": {
+        "n_estimators": 300,
+        "learning_rate": 0.05,
+        "max_depth": 6,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "tree_method": "hist",
+        "early_stopping_rounds": 20,
+        "random_state": 42
+    },
+
+    # If True, use duckdb parquet scan; if False, read CSV
+    "use_duckdb": False,
+}
+# ==============================================================
 
 
+def main(cfg):
+    print("XGBoost version:", xgb.__version__)
 
-print("XGBoost version:", xgb.__version__)
+    if cfg["use_duckdb"]:
+        con = duckdb.connect()
+        df = con.execute(f"""
+            SELECT "Time Stamp", Load, Name
+            FROM parquet_scan('{cfg["data_path"]}')
+            WHERE Name = '{cfg["station"]}'
+            ORDER BY "Time Stamp"
+        """).df()
+    else:
+        df = pd.read_csv(cfg["data_path"])
+        df = df[df["Name"] == cfg["station"]]
 
-# Load station data
-con = duckdb.connect()
-station = "GENESE"
+    # Preprocessing
+    df["Time Stamp"] = pd.to_datetime(df["Time Stamp"], errors="coerce")
+    df = df.dropna(subset=["Time Stamp"])
+    df = df.sort_values("Time Stamp")
+    df["year"] = df["Time Stamp"].dt.year
 
-df = con.execute(f"""
-    SELECT "Time Stamp", Load, Name
-    FROM parquet_scan('nyiso_dataset/**/*.parquet')
-    WHERE Name = '{station}'
-    ORDER BY "Time Stamp"
-""").df()
+    # Lag features
+    for lag in cfg["lags"]:
+        df[f"lag_{lag}"] = df["Load"].shift(lag)
+    df = df.dropna()
 
+    # If your data only covers one year, just split 80/20
+    if df["year"].nunique() == 1:
+        cutoff = int(len(df) * 0.8)
+        train, test = df.iloc[:cutoff], df.iloc[cutoff:]
+        val = test.copy()  # small val placeholder
+    else:
+        train = df[(df["year"] >= cfg["train_start"]) & (df["year"] <= cfg["train_end"])]
+        val = df[df["year"] == cfg["val_year"]]
+        test = df[df["year"].isin(cfg["test_years"])]
 
-# Preproc
-df["Time Stamp"] = pd.to_datetime(df["Time Stamp"], errors="coerce")
-df = df.dropna(subset=["Time Stamp"])
-df = df.sort_values("Time Stamp")
+    X_train = train[[f"lag_{l}" for l in cfg["lags"]]]
+    y_train = train["Load"]
+    X_val = val[[f"lag_{l}" for l in cfg["lags"]]]
+    y_val = val["Load"]
+    X_test = test[[f"lag_{l}" for l in cfg["lags"]]]
+    y_test = test["Load"]
 
+    print(f"Train: {len(train)}, Val: {len(val)}, Test: {len(test)}")
 
+    # Model
+    model = xgb.XGBRegressor(**cfg["model"])
 
-# Extract year for splitting
-df["year"] = df["Time Stamp"].dt.year
+    model.fit(
+        X_train, y_train,
+        eval_set=[(X_val, y_val)],
+        verbose=True
+    )
 
+    # Eval
+    y_pred = model.predict(X_test)
+    rmse = root_mean_squared_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
+    mae = mean_absolute_error(y_test, y_pred)
+    mape = (abs((y_test - y_pred) / y_test)).mean() * 100
 
-# Lag feature columns are just the same load column shifted by 1, 7, and 30 days, so the model can properly learn time series patterns.
-for lag in [1, 7, 30]:
-    df[f"lag_{lag}"] = df["Load"].shift(lag)
+    print(f"MAPE: {mape:.2f}%")
+    print(f"MAE: {mae:.2f} MW")
+    print(f"Test RMSE: {rmse:.2f}")
+    print(f"Test R²: {r2:.3f}")
 
-df = df.dropna()
-
-
-train = df[(df["year"] >= 2001) & (df["year"] <= 2021)]
-val   = df[df["year"] == 2022]
-test  = df[df["year"].isin([2023, 2024, 2025])]
-
-X_train = train[[f"lag_{l}" for l in [1, 7, 30]]]
-y_train = train["Load"]
-
-X_val = val[[f"lag_{l}" for l in [1, 7, 30]]]
-y_val = val["Load"]
-
-X_test = test[[f"lag_{l}" for l in [1, 7, 30]]]
-y_test = test["Load"]
-
-print(f"Train: {len(train)}, Val: {len(val)}, Test: {len(test)}")
-
-
-# Train model
-
-model = xgb.XGBRegressor(
-    n_estimators=500,
-    learning_rate=0.05,
-    max_depth=6,
-    subsample=0.8,
-    colsample_bytree=0.8,
-    tree_method="hist",
-    early_stopping_rounds=20,
-    random_state=42
-)
-
-print("Model class:", type(model))
-
-model.fit(
-    X_train, y_train,
-    eval_set=[(X_val, y_val)],
-    verbose=True
-)
-
-
-# Eval
-y_pred = model.predict(X_test)
-
-rmse = root_mean_squared_error(y_test, y_pred)
-r2 = r2_score(y_test, y_pred)
-mae = mean_absolute_error(y_test, y_pred)
-mape = (abs((y_test - y_pred) / y_test)).mean() * 100
-
-print(f"MAPE: {mape:.2f}%")
-print(f"MAE: {mae:.2f} MW")
-print(f"Test RMSE: {rmse:.2f}")
-print(f"Test R²: {r2:.3f}")
-
-# Plot actual vs predicted
-
-plt.figure(figsize=(14,6))
-plt.plot(test["Time Stamp"], y_test.values, label="Actual", alpha=0.6)
-plt.plot(test["Time Stamp"], y_pred, label="Predicted", alpha=0.8)
-plt.title(f"{station} Load Prediction (2023–2025)")
-plt.xlabel("Date")
-plt.ylabel("Load (MW)")
-plt.legend()
-plt.show()
+    # Plot
+    plt.figure(figsize=(14,6))
+    plt.plot(test["Time Stamp"], y_test.values, label="Actual", alpha=0.6)
+    plt.plot(test["Time Stamp"], y_pred, label="Predicted", alpha=0.8)
+    plt.title(f"{cfg['station']} Load Prediction")
+    plt.xlabel("Date")
+    plt.ylabel("Load (MW)")
+    plt.legend()
+    plt.show()
 
 
+if __name__ == "__main__":
+    main(CONFIG)
