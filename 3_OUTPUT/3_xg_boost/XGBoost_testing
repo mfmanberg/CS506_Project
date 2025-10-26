@@ -1,0 +1,195 @@
+import duckdb
+import pandas as pd
+import xgboost as xgb
+from sklearn.metrics import root_mean_squared_error, r2_score, mean_absolute_error
+import matplotlib.pyplot as plt
+
+
+# Read and aggregate all 2023 parquet files into memory
+import os, glob
+import pandas as pd
+import numpy as np
+
+# SOURCE_DIR already defined in an earlier cell; redefine here for safety if needed
+SOURCE_DIR = r"C:\Users\Matt\Desktop\CS506\CS506_Project\1_LIB\nyiso\nyiso_parquet\2023"
+
+def find_parquets(src):
+    pattern = os.path.join(src, '**', '*.parquet')
+    return sorted(glob.glob(pattern, recursive=True))
+
+def load_parquets(paths):
+    dfs = []
+    for p in paths:
+        try:
+            df = pd.read_parquet(p)
+            df['_source_file'] = os.path.basename(p)
+            dfs.append(df)
+        except Exception as e:
+            print(f"Warning: failed to read {p}: {e}")
+    if not dfs:
+        return pd.DataFrame()
+    return pd.concat(dfs, ignore_index=True)
+
+def ensure_datetime(df, col='Time Stamp'):
+    if col in df.columns:
+        df[col] = pd.to_datetime(df[col], errors='coerce')
+    else:
+        for alt in ['Timestamp','timestamp','time','datetime','time_stamp']:
+            if alt in df.columns:
+                df.rename(columns={alt: col}, inplace=True)
+                df[col] = pd.to_datetime(df[col], errors='coerce')
+                break
+    return df
+
+# --- Load files into memory ---
+paths = find_parquets(SOURCE_DIR)
+print(f"Found {len(paths)} parquet files under {SOURCE_DIR}")
+
+df_all = load_parquets(paths)
+print(f"Loaded total rows: {len(df_all)}")
+
+# Keep dataframe in memory as `df_all` and build aggregates
+if df_all.empty:
+    print('No data loaded from parquet files')
+else:
+    df_all = ensure_datetime(df_all)
+    # basic summary
+    print('Columns:', df_all.columns.tolist())
+    if 'Load' in df_all.columns:
+        print(df_all['Load'].describe())
+    # Create time-based aggregates in-memory
+    if 'Time Stamp' in df_all.columns and 'Load' in df_all.columns:
+        df_all.set_index('Time Stamp', inplace=True)
+        # 5-minute and 15-minute aggregates
+        five = df_all['Load'].resample('5T').sum().to_frame('total_load')
+        quarter = df_all['Load'].resample('15T').sum().to_frame('total_load')
+        hourly = df_all['Load'].resample('H').sum().to_frame('total_load')
+        daily = df_all['Load'].resample('D').sum().to_frame('total_load')
+        per_name_daily = df_all.groupby([pd.Grouper(freq='D'), 'Name'])['Load'].sum().unstack(fill_value=0)
+        print('Aggregates created in memory: `five`, `quarter`, `hourly`, `daily`, per-name tables')
+    else:
+        print('Missing Time Stamp or Load column; cannot create aggregates')
+        
+        # per-name aggregates at those frequencies (wide form)
+        # per_name_5min = df_all.groupby([pd.Grouper(freq='5T'), 'Name'])['Load'].sum().unstack(fill_value=0)
+        # per_name_15min = df_all.groupby([pd.Grouper(freq='15T'), 'Name'])['Load'].sum().unstack(fill_value=0)
+
+del daily, df_all, five, hourly, paths, per_name_daily, SOURCE_DIR #Changes as fit 
+
+
+# ==========================================================================
+# CONFIG SECTION — change only this part to parametrize effectively
+# ==========================================================================
+CONFIG = {
+    # You can use parquet wildcard like parquet_scan('nyiso_dataset/**/*.parquet') or a single CSV
+    "data_path": r"C:\code\python\nyiso_project\CS506_Project\3_OUTPUT\ActualData\20250919pal.csv",
+
+    # Station name
+    "station": "LONGIL",
+
+    # Lag values (depends on dataset frequency)
+    "lags": [1, 7, 30],
+
+    # Year splits
+    "train_start": 2001,
+    "train_end": 2021,
+    "val_year": 2022,
+    "test_years": [2023, 2024, 2025],
+
+    # Model params
+    "model": {
+        "n_estimators": 300,
+        "learning_rate": 0.05,
+        "max_depth": 6,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "tree_method": "hist",
+        "early_stopping_rounds": 20,
+        "random_state": 42
+    },
+
+    # If True, use duckdb parquet scan; if False, read CSV
+    "use_duckdb": False,
+}
+# ==============================================================
+
+
+def main(cfg):
+    print("XGBoost version:", xgb.__version__)
+
+    if cfg["use_duckdb"]:
+        con = duckdb.connect()
+        df = con.execute(f"""
+            SELECT "Time Stamp", Load, Name
+            FROM parquet_scan('{cfg["data_path"]}')
+            WHERE Name = '{cfg["station"]}'
+            ORDER BY "Time Stamp"
+        """).df()
+    else:
+        df = pd.read_csv(cfg["data_path"])
+        df = df[df["Name"] == cfg["station"]]
+
+    # Preprocessing
+    df["Time Stamp"] = pd.to_datetime(df["Time Stamp"], errors="coerce")
+    df = df.dropna(subset=["Time Stamp"])
+    df = df.sort_values("Time Stamp")
+    df["year"] = df["Time Stamp"].dt.year
+
+    # Lag features
+    for lag in cfg["lags"]:
+        df[f"lag_{lag}"] = df["Load"].shift(lag)
+    df = df.dropna()
+
+    # If your data only covers one year, just split 80/20
+    if df["year"].nunique() == 1:
+        cutoff = int(len(df) * 0.8)
+        train, test = df.iloc[:cutoff], df.iloc[cutoff:]
+        val = test.copy()  # small val placeholder
+    else:
+        train = df[(df["year"] >= cfg["train_start"]) & (df["year"] <= cfg["train_end"])]
+        val = df[df["year"] == cfg["val_year"]]
+        test = df[df["year"].isin(cfg["test_years"])]
+
+    X_train = train[[f"lag_{l}" for l in cfg["lags"]]]
+    y_train = train["Load"]
+    X_val = val[[f"lag_{l}" for l in cfg["lags"]]]
+    y_val = val["Load"]
+    X_test = test[[f"lag_{l}" for l in cfg["lags"]]]
+    y_test = test["Load"]
+
+    print(f"Train: {len(train)}, Val: {len(val)}, Test: {len(test)}")
+
+    # Model
+    model = xgb.XGBRegressor(**cfg["model"])
+
+    model.fit(
+        X_train, y_train,
+        eval_set=[(X_val, y_val)],
+        verbose=True
+    )
+
+    # Eval
+    y_pred = model.predict(X_test)
+    rmse = root_mean_squared_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
+    mae = mean_absolute_error(y_test, y_pred)
+    mape = (abs((y_test - y_pred) / y_test)).mean() * 100
+
+    print(f"MAPE: {mape:.2f}%")
+    print(f"MAE: {mae:.2f} MW")
+    print(f"Test RMSE: {rmse:.2f}")
+    print(f"Test R²: {r2:.3f}")
+
+    # Plot
+    plt.figure(figsize=(14,6))
+    plt.plot(test["Time Stamp"], y_test.values, label="Actual", alpha=0.6)
+    plt.plot(test["Time Stamp"], y_pred, label="Predicted", alpha=0.8)
+    plt.title(f"{cfg['station']} Load Prediction")
+    plt.xlabel("Date")
+    plt.ylabel("Load (MW)")
+    plt.legend()
+    plt.show()
+
+
+if __name__ == "__main__":
+    main(CONFIG)
