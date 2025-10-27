@@ -6,11 +6,10 @@ from sklearn.metrics import root_mean_squared_error, r2_score, mean_absolute_err
 import matplotlib.pyplot as plt
 
 # =========================
-# CONFIG SECTION
+# CONFIG
 # =========================
 CONFIG = {
     "station": "LONGIL",
-    "lags": [1, 7, 30],
     "train_start": 2001,
     "train_end": 2021,
     "val_year": 2022,
@@ -28,141 +27,121 @@ CONFIG = {
     "source_dir": r"1_LIB\nyiso\nyiso_parquet"
 }
 
+# LAGS per aggregate
+AGG_LAGS = {
+    'raw': [1, 5, 15, 60],
+    'five': [1, 7, 30],
+    'quarter': [1, 7, 30],
+    'hourly': [1, 24, 168],
+    'daily': [1, 7, 30]
+}
+
 # =========================
-# PARQUET LOADING & AGGREGATION
+# LOAD PARQUETS SAFELY
 # =========================
 def find_parquets(src):
-    pattern = os.path.join(src, '**', '*.parquet')
-    return sorted(glob.glob(pattern, recursive=True))
+    return sorted(glob.glob(os.path.join(src, '**', '*.parquet'), recursive=True))
 
-def load_parquets(paths):
+def load_station_data(paths, station):
     dfs = []
     for p in paths:
         try:
             df = pd.read_parquet(p)
-            df['_source_file'] = os.path.basename(p)
-            dfs.append(df)
+            if 'Name' in df.columns:
+                df = df[df['Name'] == station]
+            if len(df) > 0:
+                dfs.append(df[['Time Stamp','Load','Name']])
         except Exception as e:
-            print(f"Warning: failed to read {p}: {e}")
+            print(f"Warning reading {p}: {e}")
     if not dfs:
         return pd.DataFrame()
-    return pd.concat(dfs, ignore_index=True)
-
-def ensure_datetime(df, col='Time Stamp'):
-    if col in df.columns:
-        df[col] = pd.to_datetime(df[col], errors='coerce')
-    else:
-        for alt in ['Timestamp','timestamp','time','datetime','time_stamp']:
-            if alt in df.columns:
-                df.rename(columns={alt: col}, inplace=True)
-                df[col] = pd.to_datetime(df[col], errors='coerce')
-                break
+    df = pd.concat(dfs, ignore_index=True)
+    df['Time Stamp'] = pd.to_datetime(df['Time Stamp'], errors='coerce')
+    df = df.dropna(subset=['Time Stamp'])
+    df = df.sort_values('Time Stamp')
+    df = df.drop_duplicates(subset=['Time Stamp'])  # Keep only one LONGIL per timestamp
+    df.set_index('Time Stamp', inplace=True)
     return df
 
-# Load and aggregate
-paths = find_parquets(CONFIG["source_dir"])
-print(f"Found {len(paths)} parquet files under {CONFIG['source_dir']}")
-df_all = load_parquets(paths)
-print(f"Loaded total rows: {len(df_all)}")
-
-if df_all.empty:
-    raise ValueError("No data loaded from parquet files! Check pyarrow/fastparquet.")
-else:
-    df_all = ensure_datetime(df_all)
-    df_all.set_index('Time Stamp', inplace=True)
-    five = df_all['Load'].resample('5min').sum().to_frame('Load')
-    quarter = df_all['Load'].resample('15min').sum().to_frame('Load')
-    hourly = df_all['Load'].resample('1h').sum().to_frame('Load')
-    daily = df_all['Load'].resample('1d').sum().to_frame('Load')
-    per_name_daily = df_all.groupby([pd.Grouper(freq='D'), 'Name'])['Load'].sum().unstack(fill_value=0)
-    print("Aggregates created: five, quarter, hourly, daily, per_name_daily")
+# =========================
+# CREATE LAG AGGREGATES
+# =========================
+def create_aggregates(df):
+    raw = df[['Load']].copy()
+    five = raw.resample('5min').sum()
+    quarter = raw.resample('15min').sum()
+    hourly = raw.resample('1h').sum()
+    daily = raw.resample('1d').sum()
+    return {'raw': raw, 'five': five, 'quarter': quarter, 'hourly': hourly, 'daily': daily}
 
 # =========================
 # XGBOOST FUNCTION
 # =========================
-def run_xgboost_on_df(df, station=CONFIG["station"], lags=CONFIG["lags"],
-                      train_start=CONFIG["train_start"], train_end=CONFIG["train_end"],
-                      val_year=CONFIG["val_year"], test_years=CONFIG["test_years"],
-                      model_params=CONFIG["model"]):
-
+def run_xgboost(df, lags=[1,7,30], agg_name=''):
     df = df.copy()
-    if 'Name' not in df.columns:
-        df['Name'] = station
-    if 'Time Stamp' not in df.columns:
-        df = df.reset_index()
-        df.rename(columns={df.columns[0]: 'Time Stamp'}, inplace=True)
-
-    df['Time Stamp'] = pd.to_datetime(df['Time Stamp'], errors='coerce')
-    df = df.dropna(subset=['Time Stamp'])
-    df = df.sort_values('Time Stamp')
+    df = df.reset_index()
     df['year'] = df['Time Stamp'].dt.year
-    df = df[df['Name'] == station]
-
-    # Lags
+    
     for lag in lags:
         df[f'lag_{lag}'] = df['Load'].shift(lag)
     df = df.dropna()
-
-    # Split
-    if df['year'].nunique() == 1:
-        cutoff = int(len(df) * 0.8)
-        train, test = df.iloc[:cutoff], df.iloc[cutoff:]
-        val = test.copy()
-    else:
-        train = df[(df['year'] >= train_start) & (df['year'] <= train_end)]
-        val = df[df['year'] == val_year]
-        test = df[df['year'].isin(test_years)]
-
+    
+    train = df[(df['year'] >= CONFIG['train_start']) & (df['year'] <= CONFIG['train_end'])]
+    val = df[df['year'] == CONFIG['val_year']]
+    test = df[df['year'].isin(CONFIG['test_years'])]
+    
     X_train = train[[f'lag_{l}' for l in lags]]
     y_train = train['Load']
     X_val = val[[f'lag_{l}' for l in lags]]
     y_val = val['Load']
     X_test = test[[f'lag_{l}' for l in lags]]
     y_test = test['Load']
-
-    print(f"Train: {len(train)}, Val: {len(val)}, Test: {len(test)}")
-
-    # Train
-    model = xgb.XGBRegressor(**model_params)
+    
+    print(f"Train: {len(train)}, Val: {len(val)}, Test: {len(test)} for {agg_name}")
+    
+    model = xgb.XGBRegressor(**CONFIG['model'])
     model.fit(X_train, y_train, eval_set=[(X_val, y_val)], verbose=True)
-
-    # Predictions
+    
     y_pred = model.predict(X_test)
-
-    # Metrics with robust MAPE
+    
     rmse = root_mean_squared_error(y_test, y_pred)
     r2 = r2_score(y_test, y_pred)
     mae = mean_absolute_error(y_test, y_pred)
-    # Ignore zeros to prevent exploding MAPE, especially for five
     mask = y_test != 0
     mape = (abs((y_test[mask] - y_pred[mask]) / y_test[mask])).mean() * 100
-
-    print(f"MAPE: {mape:.2f}% | MAE: {mae:.2f} MW | RMSE: {rmse:.2f} | R²: {r2:.3f}")
-
-    # Plot
+    
+    print(f"MAPE: {mape:.2f}% | MAE: {mae:.2f} | RMSE: {rmse:.2f} | R2: {r2:.3f}")
+    
     plt.figure(figsize=(14,6))
-    plt.plot(test['Time Stamp'], y_test.values, label='Actual', alpha=0.6)
+    plt.plot(test['Time Stamp'], y_test, label='Actual', alpha=0.6)
     plt.plot(test['Time Stamp'], y_pred, label='Predicted', alpha=0.8)
-    plt.title(f'{station} Load Prediction')
-    plt.xlabel('Date')
-    plt.ylabel('Load (MW)')
+    plt.title(f"{CONFIG['station']} Load Prediction for {agg_name}")
+    plt.xlabel("Date")
+    plt.ylabel("Load (MW)")
     plt.legend()
     plt.show()
-
+    
     return {"MAPE": mape, "MAE": mae, "RMSE": rmse, "R2": r2}
 
 # =========================
-# RUN XGBOOST ON ALL AGGREGATES & COLLECT RESULTS
+# MAIN
 # =========================
 if __name__ == "__main__":
+    paths = find_parquets(CONFIG['source_dir'])
+    print(f"Found {len(paths)} parquet files")
+    
+    df_all = load_station_data(paths, CONFIG['station'])
+    print(f"Loaded {len(df_all)} rows for {CONFIG['station']}")
+    
+    AGG_DFS = create_aggregates(df_all)
+    
     results = {}
-    for agg_name, agg_df in zip(['five', 'quarter', 'hourly', 'daily'], [five, quarter, hourly, daily]):
-        print(f"\n==== Running XGBoost on {agg_name} aggregate ====")
-        metrics = run_xgboost_on_df(agg_df, station=CONFIG["station"])
+    for agg_name, agg_df in AGG_DFS.items():
+        lags = AGG_LAGS.get(agg_name, [1,7,30])
+        metrics = run_xgboost(agg_df, lags=lags, agg_name=agg_name)
         results[agg_name] = metrics
-
-    # Final results table
+    
     results_df = pd.DataFrame(results).T
-    results_df = results_df[['MAPE', 'MAE', 'RMSE', 'R2']]
-    print("\n==== Summary of all aggregates ====")
+    results_df = results_df[['MAPE','MAE','RMSE','R2']]
+    print("\n==== Summary ====")
     print(results_df)
