@@ -58,9 +58,17 @@ for file_url in tqdm(links, desc="Downloading & converting"):
                                 df[col] = pd.to_datetime(df[col], errors="coerce")
                                 time_col = col
                                 break
-                        else:
-                            print(f"No timestamp column in {member}, skipping.")
-                            continue
+                            else:
+                                print(f"No timestamp column in {member}, skipping.")
+                                continue
+                            
+                        # add a check if its an int column make it float
+                        for col in df.select_dtypes(include=["number"]).columns:
+
+                            if not pd.api.types.is_float_dtype(df[col]):
+                                df[col] = df[col].astype("float64")
+                            else:
+                                df[col] = df[col].astype("float64")
 
                         # Add year/month columns
                         df["year"] = df[time_col].dt.year
