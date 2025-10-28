@@ -66,5 +66,6 @@ FROM read_parquet('./../../1_LIB/nyiso/nyiso_parquet/**/*.parquet')
 
 ## Other Observations
 - Our current SVR model takes roughly an hour to train. As shown in the upper graph, its predictions largely follow the trends of the true load values. However, as shown in the lower graph there are areas of large jumps that cause the model confusion as it will jump in the proper direction and subsequently jump in the opposite direction. 
+
 ![alt text](SVM_READMe_Graph.png)
 
