@@ -1,5 +1,5 @@
 # Support Vector Machine Regression for Load Prediction
-
+- The model can be ran with 3_OUTPUT/3_svr/SVM_Trunc.ipynb
 ## Data Processing
 
 The data was queried and aggregated using DuckDB.
@@ -53,6 +53,7 @@ FROM read_parquet('./../../1_LIB/nyiso/nyiso_parquet/**/*.parquet')
         - C in {0.1, 1, 10}
         - gamma in {'scale', 0.01, 0.001}
         - epsilon in {0.01, 0.1, 0.5, 1.0}
+    - Grid search was doneon a subset of the training data of size 40000.
 
     - The best hyperparameters found were:
         - {'C': 10, 'cache_size': 200, 'coef0': 0.0, 'degree': 3, 'epsilon': 0.01, 'gamma': 0.01, 'kernel': 'rbf', 'max_iter': -1, 'shrinking': True, 'tol': 0.001, 'verbose': False}
@@ -62,3 +63,8 @@ FROM read_parquet('./../../1_LIB/nyiso/nyiso_parquet/**/*.parquet')
     - Root Mean Squared Error (RMSE) of 347.6162200976427
     - Mean Absolute Percentage Error (MAPE) of 1%
     - R^2 Score of 0.9872711260207307 
+
+## Other Observations
+- Our current SVR model takes roughly an hour to train. As shown in the upper graph, its predictions largely follow the trends of the true load values. However, as shown in the lower graph there are areas of large jumps that cause the model confusion as it will jump in the proper direction and subsequently jump in the opposite direction. 
+![alt text](SVM_READMe_Graph.png)
+
