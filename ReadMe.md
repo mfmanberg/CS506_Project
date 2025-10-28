@@ -69,3 +69,5 @@ FROM read_parquet('./../../1_LIB/nyiso/nyiso_parquet/**/*.parquet')
 
 ![alt text](SVM_READMe_Graph.png)
 
+
+
