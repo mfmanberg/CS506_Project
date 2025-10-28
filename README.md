@@ -17,7 +17,7 @@ There are two main goals of this project:
 1. Explore data behavior of NY’s Energy Load (ACF, business events, etc…).
 2. **Attempt to outcompete NYISO’s time-series forecasting of Energy Load** on an hourly or more granular scale on an aggregate or zone basis.
 
-## Prelimnary Visualizations
+## Preliminary Visualizations
 
 ![alt text](TotalLoad2023Day15Min.png)
 ![alt text](DayByDayJan2023.png)
