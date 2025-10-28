@@ -1,6 +1,31 @@
-# Support Vector Machine Regression for Load Prediction
+# CS506 Project Midterm Report: Energy Load Forecasting
+**Description of the project**
+
+NYISO was birthed out of a catastrophic power outage, costing the American public millions and resulting in deaths. They have their own forecasts (they release publicly and utilize similar methodology as the private utility companies). They oversee all of NY's jurisdictions, with an imperfect picture of (my guess due to poor data sharing common in utilities) of when new load is introduced or removed in addition to other noise. This forecast is important to prevent future catastrophe. 
+
+*NYISO Zones, Source: https://www.nyiso.com/real-time-dashboard.*
+
+
+Utility companies profit is already negotiated between the state and them in the rate case. They legally cannot charge more for what they buy, they can only charge utility bills for the Distribution and carry over the buying cost. A better forecast would result in less spot buying, and save the ratepayer (the person who pays the utility bill) millions of dollars a day in addition  to further informing NYISO’s important oversight.
+
+Previous forecasts are rooted in a deterministic methodology despite the system acting as a non-linear chaotic environment. An empirical, dynamic, and inductive data-driven approach such as Deep Learning may prove to outcompete current forecasts. Business events, from outages, industrial load spikes, residential load spikes, etc… cause a sudden seemingly-stochastic drop in load. A decision-tree may prevent further error from switching models (such as the criteria of 10% error given a time-period). 
+
+**Clear goal(s) (e.g. Successfully predict the number of students attending lecture based on the weather report).**
+
+There are two main goals of this project:
+
+1. Explore data behavior of NY’s Energy Load (ACF, business events, etc…).
+2. **Attempt to outcompete NYISO’s time-series forecasting of Energy Load** on an hourly or more granular scale on an aggregate or zone basis.
+
+## Prelimnary Visualizations
+
+![alt text](TotalLoad2023Day15Min.png)
+![alt text](DayByDayJan2023.png)
+
+
+## Support Vector Machine Regression Model for Load Prediction
 - The model can be ran with 3_OUTPUT/3_svr/SVM_Trunc.ipynb
-## Data Processing
+### Data Processing
 
 The data was queried and aggregated using DuckDB.
 
@@ -9,28 +34,28 @@ SELECT "Time Stamp", Load
 FROM read_parquet('./../../1_LIB/nyiso/nyiso_parquet/**/*.parquet')
 ```
 
-### Aggregation and Cleaning
-#### Aggregation:
+#### Aggregation and Cleaning
+##### Aggregation:
 - All regional load values were aggregated by timestamp to compute the total energy loads across regions.
 
     ``` python
     df_total_load = df.groupby("Time Stamp", as_index=False)["Load"].sum()
     ```
 
-#### DateTime Processesing
+##### DateTime Processesing
 - The Time Stamp column was converted to datetime format and resampled to an hourly frequency to obtain hourly average load values.
     ``` python
     df_total_load['Time'] = pd.to_datetime(df_total_load['Time'])
     df_hourly = df_total_load.resample('1H').mean().dropna().reset_index()
     ```
-#### Data Splitting
+##### Data Splitting
 - The dataset was divded chronologically into:
     - Training 2001 - 2021
     - Validation: 2022
     - Testing: 2023 - 2025
 
-## Data Modeling Methods
-### Feature Scaling
+### Data Modeling Methods
+#### Feature Scaling
 - All load values were standardized with StandardScaler from scikit-learn.
 
     ``` python
@@ -39,14 +64,14 @@ FROM read_parquet('./../../1_LIB/nyiso/nyiso_parquet/**/*.parquet')
     val_scaled = scaler.transform(val_data)
     test_scaled = scaler.transform(test_data)
     ```
-### Lag Feature Construction
+#### Lag Feature Construction
 - Because energy load exhibits temporal dependencies, the model was trained using a sliding window approach with the size of the window being 5. Prediction is based on the values of the past 5 hours.
 
     ``` python
     TIME_STEPS = 5
     X_train, y_train = create_dataset(train_scaled, train_scaled, TIME_STEPS)
     ```
-### Model Selection
+#### Model Selection
 - A support Vector Regression model with a rbf kernel was chosen due to its ability to model non linear relationships between past and future load values.
 - Hypterparameter Tuning:
     - A grid search was done over:
@@ -57,14 +82,14 @@ FROM read_parquet('./../../1_LIB/nyiso/nyiso_parquet/**/*.parquet')
 
     - The best hyperparameters found were:
         - {'C': 10, 'cache_size': 200, 'coef0': 0.0, 'degree': 3, 'epsilon': 0.01, 'gamma': 0.01, 'kernel': 'rbf', 'max_iter': -1, 'shrinking': True, 'tol': 0.001, 'verbose': False}
-### Model Evaluation
+#### Model Evaluation
 - Our current SSVR model profuced the following metrics on Testing Data:
     - Mean Absolute Error (MAE) of 170.34232309986712
     - Root Mean Squared Error (RMSE) of 347.6162200976427
     - Mean Absolute Percentage Error (MAPE) of 1%
     - R^2 Score of 0.9872711260207307 
 
-## Other Observations
+### Other Observations
 - Our current SVR model takes roughly an hour to train. As shown in the upper graph, its predictions largely follow the trends of the true load values. However, as shown in the lower graph there are areas of large jumps that cause the model confusion as it will jump in the proper direction and subsequently jump in the opposite direction. 
 
 ![alt text](SVM_READMe_Graph.png)
@@ -73,20 +98,20 @@ FROM read_parquet('./../../1_LIB/nyiso/nyiso_parquet/**/*.parquet')
 ---
 <br>
 
-# XGBoost Regression for Load Prediction
+## XGBoost Regression for Load Prediction
 
 * The model can be run from `3_OUTPUT/3_xg_boost/XGBoost_testing.py`
 
-## Data Processing
+### Data Processing
 
 The data was queried and aggregated using DuckDB, sourced from the parquet files stored in
 `1_LIB/nyiso/nyiso_parquet/`.
 
 Each parquet file contains timestamped load values for different NYISO regions.
 
-### Aggregation and Cleaning
+#### Aggregation and Cleaning
 
-#### Aggregation
+##### Aggregation
 
 * All regional load values were filtered by the selected station (e.g., **LONGIL**, **GENESE**, etc) and then resampled to multiple time granularities:
 
@@ -99,7 +124,7 @@ Each parquet file contains timestamped load values for different NYISO regions.
   ```
 * These resampled datasets allowed the model to evaluate how different temporal resolutions affect prediction performance, identifying cyclic trends in different resolutions.
 
-#### Cleaning
+##### Cleaning
 
 * Duplicate timestamps were dropped after being gathered for the specified station to ensure consistent time indices. This column is then set as index, in datetime format
 
@@ -108,7 +133,7 @@ Each parquet file contains timestamped load values for different NYISO regions.
   df = df.drop_duplicates(subset=['Time Stamp']).set_index('Time Stamp')
   ```
 
-#### Data Splitting
+##### Data Splitting
 
 * The dataset was split chronologically:
 
@@ -118,9 +143,9 @@ Each parquet file contains timestamped load values for different NYISO regions.
 
 ---
 
-## Data Modeling Methods
+### Data Modeling Methods
 
-### Lag Feature Construction
+#### Lag Feature Construction
 
 * Each aggregate level used different lag windows to capture temporal dependencies:
 
@@ -140,12 +165,12 @@ Each parquet file contains timestamped load values for different NYISO regions.
   * `hourly`: daily and weekly cycles
   * `daily`: long-term seasonal trends
 
-### Model Selection
+#### Model Selection
 
 * **XGBoost Regressor** was selected for its efficiency and ability to model non-linear temporal relationships.
 * It uses **gradient boosting** over decision trees to minimize prediction error iteratively.
 
-### Hyperparameter Configuration
+#### Hyperparameter Configuration
 
 The model used the following tuned parameters:
 
@@ -162,7 +187,7 @@ The model used the following tuned parameters:
 }
 ```
 
-### Model Evaluation
+#### Model Evaluation
 
 Each aggregate level’s model was trained and tested individually.
 The metrics computed include:
@@ -185,7 +210,7 @@ The metrics computed include:
 
 ---
 
-## Other Observations
+### Other Observations
 
 * **Raw data (no aggregation)** runs the slowest (12.7 s) but gives near-perfect performance since it learns all of the fine-scale dependencies in the data.
 
