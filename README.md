@@ -1,4 +1,9 @@
 # CS506 Project Midterm Report: Energy Load Forecasting
+
+## Youtube Video
+
+https://youtu.be/EbO-ILR7YLY
+
 **Description of the project**
 
 NYISO was birthed out of a catastrophic power outage, costing the American public millions and resulting in deaths. They have their own forecasts (they release publicly and utilize similar methodology as the private utility companies). They oversee all of NY's jurisdictions, with an imperfect picture of (my guess due to poor data sharing common in utilities) of when new load is introduced or removed in addition to other noise. This forecast is important to prevent future catastrophe. 
@@ -20,12 +25,43 @@ There are two main goals of this project:
 ## Preliminary Visualizations
 
 ![alt text](TotalLoad2023Day15Min.png)
-![alt text](DayByDayJan2023.png)
+![alt text](DayByDayJan2023.png)'
+
+
+# Data Processing
+
+Web-scraped NYISO Data
+
+Aggregated to 5 minute, 15 minute, Hourly and Daily time-scales. 
+
+Learned to use parquets for effiecent computation and github for large data. 
+
+
+## Linear Regression 
+
+Used to tease data behavior and act as baseline. Evident big spikes in data behavior/"business events" have large effect.  Right-skewed residual distribution. At 15 minute time-scale aggregation:
+
+Prediction window summary
+  Range: 2023-01-01 00:00:00 -> 2024-12-31 23:45:00  (n=70,176)
+  Actual:
+    mean=52002.218, std=11464.106, min=0.000, max=225136.700
+  Pred:
+    mean=48757.355, std=473.322, min=47937.556, max=49577.154
+  Errors:
+    MAE=7818.404, MSE=142767659.736, RMSE=11948.542, MAPE=13.763%
+    Bias (mean residual)=-3244.863
+  Fit:
+    R^2=-0.0863, Pearson r=-0.0544, Spearman ρ=-0.0575
+
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)
 
 
 ## Support Vector Machine Regression Model for Load Prediction
 - The model can be ran with 3_OUTPUT/3_svr/SVM_Trunc.ipynb
-### Data Processing
+
+### SVM Data Processing
 
 The data was queried and aggregated using DuckDB.
 
