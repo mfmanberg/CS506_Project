@@ -4,10 +4,11 @@ import numpy as np
 import xgboost as xgb
 from sklearn.metrics import root_mean_squared_error, r2_score, mean_absolute_error
 import matplotlib.pyplot as plt
+import json
 
-# =========================
+
 # CONFIG
-# =========================
+
 CONFIG = {
     "station": "LONGIL",
     "train_start": 2001,
@@ -36,9 +37,9 @@ AGG_LAGS = {
     'daily': [1, 7, 30]
 }
 
-# =========================
+
 # LOAD PARQUETS SAFELY
-# =========================
+
 def find_parquets(src):
     return sorted(glob.glob(os.path.join(src, '**', '*.parquet'), recursive=True))
 
@@ -63,20 +64,20 @@ def load_station_data(paths, station):
     df.set_index('Time Stamp', inplace=True)
     return df
 
-# =========================
+
 # CREATE LAG AGGREGATES
-# =========================
+
 def create_aggregates(df):
     raw = df[['Load']].copy()
-    five = raw.resample('5min').sum()
-    quarter = raw.resample('15min').sum()
-    hourly = raw.resample('1h').sum()
-    daily = raw.resample('1d').sum()
+    five = raw.resample('5min').mean()
+    quarter = raw.resample('15min').mean()
+    hourly = raw.resample('1h').mean()
+    daily = raw.resample('1d').mean()
     return {'raw': raw, 'five': five, 'quarter': quarter, 'hourly': hourly, 'daily': daily}
 
-# =========================
+
 # XGBOOST FUNCTION
-# =========================
+
 def run_xgboost(df, lags=[1,7,30], agg_name=''):
     start_time = time.time()
 
@@ -126,9 +127,8 @@ def run_xgboost(df, lags=[1,7,30], agg_name=''):
 
     return {"MAPE": mape, "MAE": mae, "RMSE": rmse, "R2": r2, "Time_s": elapsed}
 
-# =========================
 # MAIN
-# =========================
+
 if __name__ == "__main__":
     total_start = time.time()
 
@@ -137,6 +137,10 @@ if __name__ == "__main__":
 
     df_all = load_station_data(paths, CONFIG['station'])
     print(f"Loaded {len(df_all)} rows for {CONFIG['station']}")
+    print("\n=== NYISO-only head ===")
+    print(df_all.head())
+    print("\nColumns:", df_all.columns.tolist())
+
 
     AGG_DFS = create_aggregates(df_all)
 
@@ -154,3 +158,10 @@ if __name__ == "__main__":
     print("\n==== Summary (with runtimes) ====")
     print(results_df)
     print(f"\nTotal runtime: {total_time:.2f} seconds ({total_time/60:.2f} minutes)")
+
+    # Save JSON
+    with open("results_old.json", "w") as f:
+        json.dump(results, f, indent=4)
+
+    print("\nSaved → results_old.json")
+    print(pd.DataFrame(results).T)
