@@ -10,7 +10,7 @@ import json
 # CONFIG
 
 CONFIG = {
-    "station": "NYISO_TOTAL",  # placeholder label to not break script
+    "station": "NYISO_TOTAL",  # placeholder label for to not break script
     "train_start": 2001,
     "train_end": 2021,
     "val_year": 2022,
@@ -62,29 +62,20 @@ def load_station_data(paths, station_label):
 
     df = pd.concat(dfs, ignore_index=True)
 
-    # clean timestamp
     df['Time Stamp'] = pd.to_datetime(df['Time Stamp'], errors='coerce')
     df = df.dropna(subset=['Time Stamp'])
     df = df.sort_values('Time Stamp')
 
-    # aggregate to total NYISO load at each timestamp
-    df = df.groupby('Time Stamp')['Load'].mean()
+    df = df.groupby('Time Stamp')['Load'].sum()
+
     df = df.to_frame(name='Load')
     df.index.name = 'Time Stamp'
-
-    #clean impossible loads (0 or negative)
-    bad_mask = df['Load'] <= 0
-    if bad_mask.any():
-        print(f"[CLEAN] Found {bad_mask.sum()} non-positive load values; interpolating.")
-        df.loc[bad_mask, 'Load'] = np.nan
-        df['Load'] = df['Load'].interpolate(method='time')
-        df = df.dropna(subset=['Load'])
 
     # just in case, drop duplicated index (groupby should already handle)
     df = df[~df.index.duplicated(keep='first')]
 
     # DEBUG
-    print("\n[DEBUG] After aggregation & cleaning (NYISO total):")
+    print("\n[DEBUG] After aggregation (NYISO total):")
     print(df.head())
     print("Columns:", df.columns.tolist())
 
@@ -106,6 +97,7 @@ def create_aggregates(df):
     hourly = raw.resample('1h').mean()
     daily = raw.resample('1d').mean()
     return {'raw': raw, 'five': five, 'quarter': quarter, 'hourly': hourly, 'daily': daily}
+
 
 
 def run_xgboost(df, lags=[1, 7, 30], agg_name=''):
