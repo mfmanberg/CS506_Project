@@ -22,9 +22,8 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Install Jupyter
-        run: pip install jupyter
+        run: pip install jupyter nbconvert
 
       - name: Run notebook
         run: |
-          jupyter nbconvert --to python ./../../3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb --stdout > temp_script.py
-          python temp_script.py
+          jupyter nbconvert --execute 3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb
