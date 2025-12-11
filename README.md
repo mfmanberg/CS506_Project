@@ -4,14 +4,6 @@
 
 https://youtu.be/_F0CSRmd0l0
 
-## Project Structure
-
-This repository is organized into four main directories:
-
-- **1_LIB**: Contains all raw and processed data files (NYISO energy load data, MesoNet weather data, and fused master datasets) in both CSV and Parquet formats.
-- **2_FIGURES**: Houses data exploration notebooks and visualizations, including the primary data wrangling pipeline (`1st_pass.ipynb`) and exploratory data analysis.
-- **3_OUTPUT**: Stores all model implementations and results, including Linear Regression, SVR, and XGBoost models with their respective training and evaluation scripts.
-- **4_VAULT**: A storage location for outdated files.
 
 **Description of the project**
 
@@ -85,7 +77,7 @@ The data processing pipeline consists of comprehensive ETL (Extract, Transform, 
 ### NYISO Data Processing
 
 #### 1. Web Scraping and Extraction
-- **Source**: NYISO archived files (https://mis.nyiso.com/public/P-58Blist.htm)
+- **Source**: NYISO archived files (https://mis.nyiso.com/public/P-58Blist.htm). 
 - **Method**: BeautifulSoup-based web scraper extracts ZIP files containing daily CSV data
 - **Coverage**: Historical energy load data from 2001-2025
 - **Output**: Raw CSV files extracted to `1_LIB/nyiso/nyiso_csv/`
@@ -110,7 +102,7 @@ The data processing pipeline consists of comprehensive ETL (Extract, Transform, 
 ### MesoNet Weather Data Processing
 
 #### 1. Data Collection and Extraction
-- **Source**: New York State MesoNet weather stations
+- **Source**: New York State MesoNet weather stations. Weather data was recieved via email, available via download in "MESONET_DOWNLOAD". 
 - **Variables**: Temperature, humidity, precipitation, wind speed, soil moisture, solar radiation, pressure
 - **Resolution**: 5-minute intervals from multiple stations across New York State
 - **Output**: Raw CSV files in `1_LIB/mesonet/mesonet_csv/`
@@ -156,6 +148,15 @@ The fused dataset supports multiple temporal aggregations:
 - **Master Dataset**: Located at `1_LIB/master/master.parquet`
 - **Version Control**: Large data files managed via Git LFS for GitHub storage
 - **Query Engine**: DuckDB used for efficient aggregation queries on Parquet files
+
+  ## Project Structure
+
+This repository is organized into four main directories:
+
+- **1_LIB**: Contains all raw and processed data files (NYISO energy load data, MesoNet weather data, and fused master datasets) in both CSV and Parquet formats.
+- **2_FIGURES**: Houses data exploration notebooks and visualizations, including the primary data wrangling pipeline (`1st_pass.ipynb`) and exploratory data analysis.
+- **3_OUTPUT**: Stores all model implementations and results, including Linear Regression, SVR, and XGBoost models with their respective training and evaluation scripts.
+- **4_VAULT**: A storage location for outdated files.
 
 ### Directory Structure
 ```
