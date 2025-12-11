@@ -5,9 +5,11 @@ import xgboost as xgb
 from sklearn.metrics import root_mean_squared_error, r2_score, mean_absolute_error
 import matplotlib.pyplot as plt
 import json
+from pathlib import Path
 
-
-# CONFIG
+# THIS FILE: CS506_PROJECT/3_OUTPUT/3_xg_boost/XGBoost_testing.py
+THIS_DIR = Path(__file__).resolve().parent
+ROOT_DIR = THIS_DIR.parent.parent  # -> CS506_PROJECT
 
 CONFIG = {
     "station": "NYISO_TOTAL",  # placeholder label to not break script
@@ -25,8 +27,11 @@ CONFIG = {
         "early_stopping_rounds": 20,
         "random_state": 42
     },
-    "source_dir": r"C:\code\python\nyiso_project\CS506_Project\1_LIB\nyiso\nyiso_parquet"
+    # NYISO-only parquets created by 1st_pass.ipynb
+    "source_dir": str(ROOT_DIR / "1_LIB" / "nyiso" / "nyiso_parquet"),
 }
+
+
 
 # LAGS per aggregate
 AGG_LAGS = {

@@ -59,4 +59,4 @@ def analyze_station(dataset_dir, station, window=30):
 
 
 
-analyze_station("nyiso_dataset", "GENESE", window=30)
+analyze_station("1_LIB/nyiso/nyiso_parquet", "GENESE", window=30)
