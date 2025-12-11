@@ -18,12 +18,14 @@ jobs:
           python-version: '3.13'
 
       - name: Install dependencies
+        shell: powershell
         run: |
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if (Test-Path "requirements.txt") {
+            pip install -r requirements.txt
+          }
 
       - name: Install Jupyter
         run: pip install jupyter nbconvert
 
       - name: Run notebook
-        run: |
-          jupyter nbconvert --execute 3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb
+        run: jupyter nbconvert --execute 3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb
