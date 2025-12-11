@@ -183,124 +183,11 @@ FROM read_parquet('./../../1_LIB/nyiso/nyiso_parquet/**/*.parquet')
 
 * The model can be run from `3_OUTPUT/3_xg_boost/XGBoost_postmid.py`
 
-### (OLD MODEL) XGBoost on NYISO data
-### Data Processing
 
-The data was queried and aggregated using DuckDB, sourced from the parquet files stored in
-`1_LIB/nyiso/nyiso_parquet/`.
-
-Each parquet file contains timestamped load values for different NYISO regions.
-
-#### Aggregation and Cleaning
-
-##### Aggregation
-
-* All regional load values were filtered by the selected station (e.g., **LONGIL**, **GENESE**, etc) and then resampled to multiple time granularities:
-
-  ```python
-  raw = df[['Load']].copy()
-  five = raw.resample('5min').mean()
-  quarter = raw.resample('15min').mean()
-  hourly = raw.resample('1h').mean()
-  daily = raw.resample('1d').mean()
-  ```
-* These resampled datasets allowed the model to evaluate how different temporal resolutions affect prediction performance, identifying cyclic trends in different resolutions.
-
-##### Cleaning
-
-* Duplicate timestamps were dropped after being gathered for the specified station to ensure consistent time indices. This column is then set as index, in datetime format
-
-  ```python
-  df['Time Stamp'] = pd.to_datetime(df['Time Stamp'])
-  df = df.drop_duplicates(subset=['Time Stamp']).set_index('Time Stamp')
-  ```
-
-##### Data Splitting
-
-* The dataset was split chronologically:
-
-  * **Training:** 2001–2021
-  * **Validation:** 2022
-  * **Testing:** 2023–2025
-
----
-
-### Data Modeling Methods
-
-#### Lag Feature Construction
-
-* Each aggregate level used different lag windows to capture temporal dependencies:
-
-  ```python
-  AGG_LAGS = {
-      'raw': [1, 5, 15, 60],
-      'five': [1, 7, 30],
-      'quarter': [1, 7, 30],
-      'hourly': [1, 24, 168],
-      'daily': [1, 7, 30]
-  }
-  ```
-* These lags were chosen based on the expected periodicity of load patterns (minutes, hours, or days).
-* For example:
-
-  * `raw`: minute-level fluctuations
-  * `hourly`: daily and weekly cycles
-  * `daily`: long-term seasonal trends
-
-### Model Selection
-
-An XGBoost Regressor was selected for its efficiency and ability to model non-linear temporal relationships.
-
-
-#### Hyperparameter Configuration
-
-The model used the following tuned parameters:
-
-```python
-{
-    "n_estimators": 300,
-    "learning_rate": 0.05,
-    "max_depth": 6,
-    "subsample": 0.8,
-    "colsample_bytree": 0.8,
-    "tree_method": "hist",
-    "early_stopping_rounds": 20,
-    "random_state": 42
-}
-```
-
-### Model Evaluation
-
-Each aggregate level’s model was trained and tested individually.
-The metrics computed include:
-
-* **MAPE (Mean Absolute Percentage Error)**
-* **MAE (Mean Absolute Error)**
-* **RMSE (Root Mean Squared Error)**
-* **R² (Coefficient of Determination)**
-* **Runtime (seconds)**
-
-| Aggregation | MAPE    | MAE       | RMSE      | R²       | Time (s)  |
-|------------|---------|-----------|-----------|----------|-----------|
-| raw        | 0.27 | 4.12  | 5.72  | 0.99959 | 30.43 |
-| five       | 0.37 | 5.61  | 7.6  | 0.999267 | 26.9 |
-| quarter    | 0.47 | 7.45  | 10.11 | 0.998703 | 10.25 |
-| hourly     | 2.7 | 42.07 | 53.79 | 0.963164 | 1.48  |
-| daily      | 4.77 | 74.86 | 100.51| 0.800868 | 0.18  |
-
-
-**Total runtime:** 154.98 seconds (2.58 minutes)
-
----
-
-
-
-
-## (Current Model) XGBoost on Fused NYISO + MesoNet data
 
 
 ### Data Processing
-The data was sourced from the master mesonet parquet.
+The data was sourced from the master mesonet parquet, fusing the NYISO data with MesoNet weather features.
 
 #### Cleaning
 Since the data was already cleaned, only a basic forward fill for NA values and handling the datetime column was done. 
@@ -347,7 +234,8 @@ LAG_GRID = {
 }
 ```
 ### Model Selection
-The model used here was an XGBoost Regressor as well.
+An XGBoost Regressor was selected for its efficiency and ability to model non-linear temporal relationships.
+
 #### Hyperparameter Configuration
 After running Cross Validation on the Five minute aggregation, the following model hyperparameters were chosen.
 
@@ -366,7 +254,14 @@ After running Cross Validation on the Five minute aggregation, the following mod
 The subsample and colsample parameters were chosen to decorrelate the trees, whereas the early stopping rounds parameter was set to prevent over complication and overfitting of the tree structure.
 
 ### Model Evaluation
-The evaluation metrics are:
+Each aggregate level’s model was trained and tested individually.
+The metrics computed include:
+
+* **MAPE (Mean Absolute Percentage Error)**
+* **MAE (Mean Absolute Error)**
+* **RMSE (Root Mean Squared Error)**
+* **R² (Coefficient of Determination)**
+* **Runtime (seconds)**
 
 | Aggregation | MAPE | MAE   | RMSE  | R²       | Time (s) |
 |------------|------|-------|-------|----------|----------|
@@ -377,6 +272,58 @@ The evaluation metrics are:
 
 **Total time:** 210.38 seconds
 
+
+
+The old, NYISO only model utilized the following aggregations, with "raw" being the unprocessed dataset at 1 minute intervals. This was not used as the raw mesonet data was at 5 minute intervals.
+
+  ```python
+  AGG_LAGS = {
+      'raw': [1, 5, 15, 60],
+      'five': [1, 7, 30],
+      'quarter': [1, 7, 30],
+      'hourly': [1, 24, 168],
+      'daily': [1, 7, 30]
+  }
+  ```
+These lags were chosen based on the expected periodicity of load patterns (minutes, hours, or days).
+
+The XGBoost Regressor used the following tuned parameters:
+
+```python
+{
+    "n_estimators": 300,
+    "learning_rate": 0.05,
+    "max_depth": 6,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "tree_method": "hist",
+    "early_stopping_rounds": 20,
+    "random_state": 42
+}
+```
+
+And the evaluation results were:
+
+
+
+| Aggregation | MAPE    | MAE       | RMSE      | R²       | Time (s)  |
+|------------|---------|-----------|-----------|----------|-----------|
+| raw        | 0.27 | 4.12  | 5.72  | 0.99959 | 30.43 |
+| five       | 0.37 | 5.61  | 7.6  | 0.999267 | 26.9 |
+| quarter    | 0.47 | 7.45  | 10.11 | 0.998703 | 10.25 |
+| hourly     | 2.7 | 42.07 | 53.79 | 0.963164 | 1.48  |
+| daily      | 4.77 | 74.86 | 100.51| 0.800868 | 0.18  |
+
+
+**Total runtime:** 154.98 seconds (2.58 minutes)
+
+---
+
+
+
+
+
+
 ## Model Comparison
 
 Although the fused model takes longer to run, it outperforms the old model, especially in the coarser aggregations such as hourly and daily:
@@ -384,4 +331,4 @@ Although the fused model takes longer to run, it outperforms the old model, espe
 
 ![alt text](<comparison stats new.png>)
 
-Thus, adding an additional modality helps the model learn trends faster and more efficiently.
+This result shows us that adding an additional modality helps the model learn trends faster and more efficiently.
