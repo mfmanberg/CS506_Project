@@ -1,4 +1,4 @@
-# CS506 Project Midterm Report: Energy Load Forecasting
+# CS506 Project Final Report: Energy Load Forecasting
 
 ## Youtube Video
 
@@ -105,8 +105,6 @@ Two regression approaches were compared across multiple time scales:
 
 ## Support Vector Regression Model for Load Prediction
 - The models can be found and ran in 3_OUTPUT/3_svr
-- Mesonet master parquet must be downloaded from [text](https://drive.google.com/drive/folders/1CZXxIrkN0frbkzZsEbUhB8akp5y2URMY?usp=drive_link)
-- place mesonet master parquet in 1_LIB/mesonet 
 
 ### SVM Data Processing
 
