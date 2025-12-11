@@ -28,4 +28,4 @@ jobs:
         run: pip install jupyter nbconvert
 
       - name: Run notebook
-        run: jupyter nbconvert --execute 3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb
+        run: jupyter nbconvert --to notebook --execute 3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb --inplace
