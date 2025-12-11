@@ -42,7 +42,7 @@ install: venv
 # Execute the primary data-wrangling notebook (creates master parquet under 1_LIB/master if present)
 run-1stpass:
 	@echo "Executing 1st_pass.ipynb (data wrangling)..."
-	jupyter nbconvert --to notebook --execute 2_FIGURES/1_data_wrangling/1st_pass.ipynb --ExecutePreprocessor.timeout=1800 --output 2_FIGURES/1_data_wrangling/1st_pass.ipynb
+	jupyter nbconvert --to notebook --execute 2_FIGURES/1_data_wrangling/1st_pass.ipynb --ExecutePreprocessor.timeout=1800 --inplace
 
 # Run XGBoost testing script
 run-xgb:
@@ -60,11 +60,13 @@ run-compare:
 # Execute SVR notebook (may require the venv to have nbconvert & dependencies installed)
 run-svr:
 	@echo "Executing SVMDaily.ipynb (SVR notebook)..."
-	jupyter nbconvert --to notebook --execute 3_OUTPUT/3_svr/SVMDaily.ipynb --ExecutePreprocessor.timeout=3600 --output 3_OUTPUT/3_svr/SVMDaily.ipynb
+	jupyter nbconvert --to notebook --execute 3_OUTPUT/3_svr/SVMDaily.ipynb \
+    --ExecutePreprocessor.timeout=3600 \
+    --inplace
 
 run-linear:
 	@echo "Executing linear_regression.ipynb..."
-	jupyter nbconvert --to notebook --execute 3_OUTPUT/3_linear_regression/linear_regression.ipynb --ExecutePreprocessor.timeout=3600 --output 3_OUTPUT/3_linear_regression/linear_regression.ipynb
+	jupyter nbconvert --to notebook --execute 3_OUTPUT/3_linear_regression/linear_regression.ipynb --ExecutePreprocessor.timeout=3600 --inplace
 
 clean:
 	@echo "Cleaning common outputs..."
