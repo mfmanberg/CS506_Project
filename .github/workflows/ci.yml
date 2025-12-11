@@ -26,5 +26,5 @@ jobs:
 
       - name: Run notebook
         run: |
-          jupyter nbconvert --to python ./../../3_OUTPUT/3_svr/SVM_DailywoutMeso.ipynb --stdout > temp_script.py
+          jupyter nbconvert --to python ./../../3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb --stdout > temp_script.py
           python temp_script.py
