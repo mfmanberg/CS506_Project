@@ -35,6 +35,7 @@ jobs:
       - name: Verify data files exist
         shell: powershell
         run: |
+          Write-Host "Current directory: $(Get-Location)"
           Write-Host "Checking for parquet files..."
           $files = Get-ChildItem -Path "1_LIB/nyiso/nyiso_parquet" -Recurse -Filter "*.parquet" -ErrorAction SilentlyContinue
           if ($files) {
