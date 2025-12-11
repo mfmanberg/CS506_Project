@@ -103,12 +103,12 @@ Two regression approaches were compared across multiple time scales:
    - Dewpoint temperature
 
 
-## Support Vector Machine Regression Model for Load Prediction
-- The model can be ran with 3_OUTPUT/3_svr/SVM_Trunc.ipynb
+## Support Vector Regression Model for Load Prediction
+- The models can be found and ran in 3_OUTPUT/3_svr
 
 ### SVM Data Processing
 
-The data was queried and aggregated using DuckDB.
+The data for both nyiso and mesonet was queried and aggregated using DuckDB.
 
 ``` python
 SELECT "Time Stamp", Load
@@ -124,14 +124,15 @@ FROM read_parquet('./../../1_LIB/nyiso/nyiso_parquet/**/*.parquet')
     ```
 
 ##### DateTime Processesing
-- The Time Stamp column was converted to datetime format and resampled to an hourly frequency to obtain hourly average load values.
+- The Time Stamp column was converted to datetime format and resampled to a daily/hourly/15-min frequency to obtain aggregate average load values.
     ``` python
     df_total_load['Time'] = pd.to_datetime(df_total_load['Time'])
     df_hourly = df_total_load.resample('1H').mean().dropna().reset_index()
     ```
+- The nyiso load data was then combined with the mesonet data based on timestamp. Since mesonet has fewer data points, this action truncated the data plane to 2015-2025.
 ##### Data Splitting
 - The dataset was divded chronologically into:
-    - Training 2001 - 2021
+    - Training 2015 - 2021
     - Validation: 2022
     - Testing: 2023 - 2025
 
@@ -165,13 +166,12 @@ FROM read_parquet('./../../1_LIB/nyiso/nyiso_parquet/**/*.parquet')
         - {'C': 10, 'cache_size': 200, 'coef0': 0.0, 'degree': 3, 'epsilon': 0.01, 'gamma': 0.01, 'kernel': 'rbf', 'max_iter': -1, 'shrinking': True, 'tol': 0.001, 'verbose': False}
 #### Model Evaluation
 - Our current SSVR model profuced the following metrics on Testing Data:
-    - Mean Absolute Error (MAE) of 170.34232309986712
-    - Root Mean Squared Error (RMSE) of 347.6162200976427
-    - Mean Absolute Percentage Error (MAPE) of 1%
-    - R^2 Score of 0.9872711260207307 
+    - Mean Absolute Error (MAE) of 47.6762
+    - Root Mean Squared Error (RMSE) of 117.82797
+    - Mean Absolute Percentage Error (MAPE) of 0.28287%
 
 ### Other Observations
-- Our current SVR model takes roughly an hour to train. As shown in the upper graph, its predictions largely follow the trends of the true load values. However, as shown in the lower graph there are areas of large jumps that cause the model confusion as it will jump in the proper direction and subsequently jump in the opposite direction. 
+- Our current SVR model takes roughly 5 hours to train. It's metrics greatly improve upon its previous iteration that did not involved weather data. However, it still suffers from confusion due to large jumps in the training set as shown during the midterm report. A graph is included below. 
 
 ![alt text](SVM_READMe_Graph.png)
 
