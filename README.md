@@ -39,23 +39,68 @@ Learned to use parquets for effiecent computation and github for large data.
 
 ## Linear Regression 
 
-Used to tease data behavior and act as baseline. Evident big spikes in data behavior/"business events" have large effect.  Right-skewed residual distribution. At 15 minute time-scale aggregation:
+Linear regression models were developed to establish baseline performance and explore the predictive power of temporal trends versus multivariate weather/environmental features.
 
-Prediction window summary
-  Range: 2023-01-01 00:00:00 -> 2024-12-31 23:45:00  (n=70,176)
-  Actual:
-    mean=52002.218, std=11464.106, min=0.000, max=225136.700
-  Pred:
-    mean=48757.355, std=473.322, min=47937.556, max=49577.154
-  Errors:
-    MAE=7818.404, MSE=142767659.736, RMSE=11948.542, MAPE=13.763%
-    Bias (mean residual)=-3244.863
-  Fit:
-    R^2=-0.0863, Pearson r=-0.0544, Spearman ρ=-0.0575
+### Methodology
 
-![alt text](image.png)
-![alt text](image-1.png)
-![alt text](image-2.png)
+Two regression approaches were compared across multiple time scales:
+
+1. **Univariate Linear Regression**: Uses time (seconds since epoch) as the sole predictor
+2. **Multivariate Stepwise Linear Regression**: 
+   - Forward selection with p-value < 0.05 criterion
+   - Maximizes adjusted R²
+   - Constraint: Only one feature per feature type (e.g., one soil moisture depth)
+   - Features include weather data (temperature, humidity, precipitation) and environmental data (soil moisture, wind speed, solar insolation)
+
+### Data Processing
+
+- **Training Data**: 2001-2023
+- **Testing Data**: 2023-2024
+- **Aggregation Levels**: 5min, 15min, 30min, 1hour, 3hour, 6hour, 12hour, daily
+- **Data Source**: NYISO load data fused with MesoNet weather station data
+
+### Results Comparison: Univariate vs Multivariate
+
+#### 5-Minute Aggregation
+- **Univariate**: R² = -0.0341, RMSE = 204.6, MAPE = 57.4%
+- **Multivariate**: R² = 0.2433, RMSE = 161.5, MAPE = 9.3%
+- **Improvement**: +0.2774 R² (+803%), -21.1% RMSE, -48.1% MAPE
+- **Features Used**: 23 (soil_temp, soil_moisture, dewpoint, precip, wind, snow_depth, solar, pressure, humidity, temperature)
+
+#### 15-Minute Aggregation
+- **Univariate**: R² = -0.0316, RMSE = 677.9, MAPE = 57.3%
+- **Multivariate**: R² = 0.2209, RMSE = 588.0, MAPE = 9.5%
+- **Improvement**: +0.2525 R² (+739%), -13.3% RMSE, -47.8% MAPE
+- **Features Used**: 23
+
+#### 1-Hour Aggregation
+- **Univariate**: R² = -0.0329, RMSE = 2641.0, MAPE = 56.9%
+- **Multivariate**: R² = 0.2120, RMSE = 2036.4, MAPE = 10.2%
+- **Improvement**: +0.2449 R² (+710%), -22.9% RMSE, -46.7% MAPE
+- **Features Used**: 20
+
+### Key Findings
+
+1. **Univariate models fail completely**: All univariate time-based models show negative R² values, indicating they perform worse than a simple mean predictor. This demonstrates that simple temporal trends are insufficient for load forecasting.
+
+2. **Multivariate models show substantial improvement**: Across all time scales, multivariate models achieve 700-880% improvement in R² over univariate models, with positive R² values (0.21-0.28).
+
+3. **RMSE improvements scale with aggregation**: 
+   - Fine scales (5min): -21% RMSE reduction
+   - Coarse scales (daily): -85% RMSE reduction
+
+4. **Weather features are essential**: The dramatic improvement from multivariate models proves that weather and environmental features are critical for accurate load forecasting.
+
+5. **Feature efficiency**: Coarser time scales require fewer features while maintaining performance:
+   - 5-minute: 23 features → R² = 0.24
+   - Daily: 5 features → R² = 0.28
+
+6. **Top predictive features** (by coefficient magnitude):
+   - Precipitation (incremental and local)
+   - Soil moisture at 25cm depth
+   - Temperature at 9m height
+   - Relative humidity
+   - Dewpoint temperature
 
 
 ## Support Vector Machine Regression Model for Load Prediction
