@@ -5,11 +5,14 @@ import xgboost as xgb
 from sklearn.metrics import root_mean_squared_error, r2_score, mean_absolute_error
 import matplotlib.pyplot as plt
 import json
+from pathlib import Path
 
+# THIS FILE: CS506_PROJECT/3_OUTPUT/3_xg_boost/XGBoost_postmid.py
+THIS_DIR = Path(__file__).resolve().parent
+ROOT_DIR = THIS_DIR.parent.parent  # -> CS506_PROJECT
 
-# CONFIG
-
-MASTER_PATH = r"C:\code\python\nyiso_project\CS506_Project\mesonet_master\master.parquet"  # change this path if needed
+# Fused NYISO + Mesonet master parquet created by 1st_pass.ipynb
+MASTER_PATH = ROOT_DIR / "1_LIB" / "master" / "master.parquet"
 
 CONFIG = {
     "train_start": 2001,
