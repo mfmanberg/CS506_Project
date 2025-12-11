@@ -331,4 +331,4 @@ Although the fused model takes longer to run, it outperforms the old model, espe
 
 ![alt text](<comparison stats new.png>)
 
-Thus, adding an additional modality helps the model learn trends faster and more efficiently.
+This result shows us that adding an additional modality helps the model learn trends faster and more efficiently.
