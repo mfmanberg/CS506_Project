@@ -1,0 +1,30 @@
+name: Testing
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Install Jupyter
+        run: pip install jupyter
+
+      - name: Run notebook
+        run: |
+          jupyter nbconvert --to python ./../../3_OUTPUT/3_svr/SVM_DailywoutMeso.ipynb --stdout > temp_script.py
+          python temp_script.py
