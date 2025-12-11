@@ -4,3 +4,14 @@
 # Ignore everything in 1_LIB except master folder
 1_LIB/*
 !1_LIB/master/
+
+# Python virtual environments
+venv/
+.env/
+env/
+nyisoenv/
+nyisoenv/*
+
+# Bytecode / temp
+__pycache__/
+*.pyc
