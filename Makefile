@@ -36,19 +36,17 @@ venv:
 
 install: venv
 	@echo "Installing requirements into $(VENV)..."
-	$(PIP_BIN) install --upgrade pip
-	$(PIP_BIN) install -r requirements.txt
+	$(PY_BIN) -m pip install --upgrade pip
+	$(PY_BIN) -m pip install -r requirements.txt
+
 
 # Execute the primary data-wrangling notebook (creates master parquet under 1_LIB/master if present)
 run-1stpass:
 	@echo "Executing 1st_pass.ipynb (data wrangling)..."
 	jupyter nbconvert --to notebook --execute 2_FIGURES/1_data_wrangling/1st_pass.ipynb --ExecutePreprocessor.timeout=1800 --inplace
 
-# Run XGBoost testing script
-run-xgb:
-	@echo "Running XGBoost testing script..."
-	$(PY_BIN) 3_OUTPUT/3_xg_boost/XGBoost_testing.py
 
+#run XGBoost final script
 run-xgb-postmid:
 	@echo "Running XGBoost postmid script..."
 	$(PY_BIN) 3_OUTPUT/3_xg_boost/XGBoost_postmid.py

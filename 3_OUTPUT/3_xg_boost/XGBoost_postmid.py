@@ -12,7 +12,7 @@ THIS_DIR = Path(__file__).resolve().parent
 ROOT_DIR = THIS_DIR.parent.parent  # -> CS506_PROJECT
 
 # Fused NYISO + Mesonet master parquet created by 1st_pass.ipynb
-MASTER_PATH = ROOT_DIR / "1_LIB" / "master" / "master.parquet"
+MASTER_PATH = ROOT_DIR / "1_LIB"  / "master.parquet"
 
 CONFIG = {
     "train_start": 2001,
