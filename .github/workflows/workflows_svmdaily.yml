@@ -35,16 +35,26 @@ jobs:
 
       - name: Run SVMDaily notebook
         run: |
+          export PYTHONPATH="$PWD:$PWD/Build:$PYTHONPATH"
           papermill \
             3_OUTPUT/3_svr/SVMDaily.ipynb \
-            3_OUTPUT/3_svr/SVMDaily.ipynb \
+            3_OUTPUT/3_svr/SVMDaily_output.ipynb \
             --kernel python3 \
-            --execution-timeout 1800
+            --execution-timeout 1800 \
+            --cwd "$PWD"
+
+      - name: Extract results
+        if: always()
+        run: |
+          export PYTHONPATH="$PWD:$PWD/Build:$PYTHONPATH"
+          python Build/extract_results.py || echo "Extraction completed"
 
       - name: Upload executed notebook
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: svmdaily-results
-          path: 3_OUTPUT/3_svr/SVMDaily.ipynb
+          path: |
+            3_OUTPUT/3_svr/SVMDaily_output.ipynb
+            Build/model_results.log
           retention-days: 30

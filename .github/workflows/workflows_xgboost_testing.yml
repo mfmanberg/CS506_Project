@@ -40,16 +40,19 @@ jobs:
 
       - name: Execute XGBoost_Testing.ipynb
         run: |
+          export PYTHONPATH="$PWD:$PWD/Build:$PYTHONPATH"
           papermill \
             3_OUTPUT/3_xg_boost/XGBoost_Testing.ipynb \
             3_OUTPUT/3_xg_boost/XGBoost_Testing_output.ipynb \
             --kernel python3 \
-            --execution-timeout 1800
+            --execution-timeout 1800 \
+            --cwd "$PWD"
         continue-on-error: false
 
       - name: Extract results
         if: always()
         run: |
+          export PYTHONPATH="$PWD:$PWD/Build:$PYTHONPATH"
           python Build/extract_results.py || echo "Extraction completed"
 
       - name: Upload executed notebook
@@ -64,4 +67,5 @@ jobs:
 
       - name: Verify execution
         run: |
+          export PYTHONPATH="$PWD:$PWD/Build:$PYTHONPATH"
           python Build/test_notebook_execution.py || echo "Verification completed"
