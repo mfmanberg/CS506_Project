@@ -1,13 +1,67 @@
 #!/usr/bin/env python3
-"""
+r"""
 Export SVR model animations as GIF files for README display.
 
 This script loads predictions from SVR model notebooks and generates
 animated GIFs showing prediction vs actual load over time.
+
+USAGE:
+------
+For WSL/Linux (Recommended):
+    cd /path/to/CS506_Project
+    source .venv_wsl/bin/activate
+    python Build/export_svr_animations.py
+
+For Windows (if using activation script):
+    .\Dependencies\activate_env.ps1
+    python Build/export_svr_animations.py
+
+Or run directly via WSL:
+    wsl bash -c "cd /mnt/c/Users/Matt/Desktop/CS506/CS506_Project && source .venv_wsl/bin/activate && python Build/export_svr_animations.py"
+
+REQUIREMENTS:
+-------------
+- numpy
+- matplotlib
+- pillow (for PillowWriter)
+- path_utils (from Build/ directory)
+
+Install via: pip install -r Dependencies/requirements.txt
 """
 
 import sys
 from pathlib import Path
+
+# Check for required packages before importing
+def check_dependencies():
+    """Check if required packages are installed."""
+    required = {
+        'numpy': 'numpy',
+        'matplotlib': 'matplotlib',
+        'PIL': 'pillow'
+    }
+    
+    missing = []
+    for module, package in required.items():
+        try:
+            __import__(module)
+        except ImportError:
+            missing.append(package)
+    
+    if missing:
+        print("ERROR: Missing required packages:")
+        for pkg in missing:
+            print(f"  - {pkg}")
+        print("\nInstall dependencies:")
+        print("  pip install -r Dependencies/requirements.txt")
+        print("\nOr activate the virtual environment:")
+        print("  WSL/Linux: source .venv_wsl/bin/activate")
+        print("  Windows:   Use WSL or activate .venv_wsl manually")
+        sys.exit(1)
+
+# Check dependencies first
+check_dependencies()
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -19,9 +73,16 @@ warnings.filterwarnings('ignore')
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from path_utils import get_project_root
+try:
+    from path_utils import get_project_root
+except ImportError:
+    print("ERROR: Cannot import path_utils")
+    print("Make sure you're running from the project root:")
+    print("  cd /path/to/CS506_Project")
+    print("  python Build/export_svr_animations.py")
+    sys.exit(1)
 
-def create_animation_gif(y_true, y_pred, output_path, title, window=100, fps=30, duration=10):
+def create_animation_gif(y_true, y_pred, output_path, title, window=100, fps=5, duration=10):
     """
     Create an animated GIF showing predictions vs true values.
     

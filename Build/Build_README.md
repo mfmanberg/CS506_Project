@@ -27,6 +27,9 @@ Build/
 ├── path_utils.py             # Cross-platform paths
 ├── extract_results.py        # Metric extraction
 ├── test_notebook_execution.py# Diagnostics
+├── export_svr_animations.py  # SVR animation generator
+├── run_export_animations.sh  # Animation launcher (Bash)
+├── run_export_animations.ps1 # Animation launcher (PowerShell)
 └── model_results.log         # Results (generated)
 ```
 
@@ -199,9 +202,52 @@ make -f Build/Makefile.wsl run
 python3 Build/test_notebook_execution.py  # Run diagnostics
 cat Build/model_results.log               # View results
 make -f Build/Makefile.wsl help           # Show all targets
-
-
 ```
+
+---
+
+## SVR Animation Generation
+
+Generate animated GIFs showing SVR model predictions vs actual load.
+
+### Quick Run
+
+**WSL/Linux:**
+```bash
+bash Build/run_export_animations.sh
+```
+
+**Windows PowerShell:**
+```powershell
+.\Build\run_export_animations.ps1
+```
+
+### Manual Run
+
+```bash
+# Activate environment first
+source .venv_wsl/bin/activate
+# Or use helper
+source Dependencies/activate_env.sh
+
+# Run generator
+python Build/export_svr_animations.py
+```
+
+### Output
+
+Generates 6 GIFs in `2_FIGURES/FIGURES/svr_animations/`:
+- `svr_5min_animation.gif` - 5-minute resolution (0.28% MAPE)
+- `svr_15min_animation.gif` - 15-minute resolution (~0.35% MAPE)
+- `svr_hourly_animation.gif` - Hourly resolution (0.28% MAPE)
+- `svr_hourly_trunc_animation.gif` - Truncated dataset
+- `svr_daily_weather_animation.gif` - Daily + weather (~3.5% MAPE)
+- `svr_daily_loadonly_animation.gif` - Daily load-only (~5.2% MAPE)
+
+**Settings:** 5 fps, 15 seconds duration, auto-looping
+
+---
+
 **Developer Environment Details**
 WSL2 Configuration
 WSL Version: 2.6.1.0
