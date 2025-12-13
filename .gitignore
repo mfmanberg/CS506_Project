@@ -1,9 +1,9 @@
-*.parquet
 *.csv
 
 # Ignore everything in 1_LIB except master folder
 1_LIB/*
 !1_LIB/master/
+!1_LIB/master/*.parquet
 
 # Python virtual environments
 venv/
