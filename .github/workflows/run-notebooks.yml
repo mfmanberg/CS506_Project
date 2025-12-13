@@ -31,13 +31,31 @@ jobs:
           python -m pip install --upgrade pip
           pip install jupyter nbconvert pandas numpy scikit-learn xgboost matplotlib seaborn pyarrow
       
-      - name: Check for master.parquet
+      - name: Create subset of master.parquet (first 100 rows)
         run: |
-          if [ ! -f "1_LIB/master/master.parquet" ]; then
-            echo "⚠ Warning: master.parquet not found. Notebooks may fail."
-          else
-            echo "✓ master.parquet found"
-          fi
+          python << 'EOF'
+          import pandas as pd
+          from pathlib import Path
+          
+          master_path = Path("1_LIB/master/master.parquet")
+          
+          if master_path.exists():
+              print(f"✓ Found {master_path}")
+              df = pd.read_parquet(master_path)
+              print(f"Original data: {len(df)} rows")
+              
+              # Take first 100 rows
+              df_subset = df.head(100)
+              print(f"Subset data: {len(df_subset)} rows")
+              
+              # Save subset back to same location
+              df_subset.to_parquet(master_path, index=False)
+              print(f"✓ Saved 100-row subset to {master_path}")
+          else:
+              print(f"⚠ Warning: {master_path} not found. Notebooks may fail.")
+              print("Creating empty directory...")
+              master_path.parent.mkdir(parents=True, exist_ok=True)
+          EOF
       
       - name: Run Linear Regression Notebook
         run: |
