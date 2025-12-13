@@ -48,25 +48,57 @@ cd /path/to/CS506_Project
 
 # Create virtual environment
 python3.12 -m venv .venv_wsl
+```
 
-# Activate virtual environment
+#### 3. Activate Virtual Environment
+
+**Quick Activation (Recommended):**
+
+**For PowerShell (Windows):**
+```powershell
+.\Dependencies\activate_env.ps1
+```
+
+**For Bash/WSL (Linux):**
+```bash
+source Dependencies/activate_env.sh
+# or
+. Dependencies/activate_env.sh
+```
+
+**Manual Activation:**
+
+**For PowerShell:**
+```powershell
+.\.venv_wsl\Scripts\Activate.ps1
+```
+
+**For Bash/WSL:**
+```bash
 source .venv_wsl/bin/activate
 ```
 
-#### 3. Install Dependencies
+**For Command Prompt:**
+```cmd
+.venv_wsl\Scripts\activate.bat
+```
+
+> **Note:** The activation scripts in `Dependencies/` include helpful status messages and error checking. They will verify the environment exists and provide setup instructions if needed.
+
+#### 4. Install Dependencies
 ```bash
 # Upgrade pip
 pip install --upgrade pip
 
 # Install all dependencies from requirements.txt
-pip install -r requirements.txt
+pip install -r Dependencies/requirements.txt
 ```
 
 **Installation Time:** ~5-10 minutes (depending on connection speed)  
 **Disk Space Required:** ~2GB for virtual environment  
 **Bandwidth:** ~500MB download
 
-#### 4. Verify Installation
+#### 5. Verify Installation
 ```bash
 # Check pip version (should be 25.3+)
 pip --version
