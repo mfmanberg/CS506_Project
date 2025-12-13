@@ -30,7 +30,7 @@ def create_animation_gif(y_true, y_pred, output_path, title, window=100, fps=30,
         y_pred: Array of predicted values
         output_path: Path to save GIF file
         title: Title for the plot
-        window: Number of points to show in trailing window
+        window: Number of poilnts to show in trailing window
         fps: Frames per second
         duration: Total duration in seconds
     """
