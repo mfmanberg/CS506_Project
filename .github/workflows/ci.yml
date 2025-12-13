@@ -9,65 +9,28 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-          cache: 'pip'  # Cache pip dependencies for faster builds
 
       - name: Install dependencies
         shell: powershell
         run: |
           if (Test-Path "requirements.txt") {
-            pip install -r requirements.txt
+            Write-Host "✅ requirements.txt found"
+            python -m pip install --upgrade pip
+            python -m pip install -r requirements.txt
           } else {
-            Write-Host "No requirements.txt found, skipping..."
+            Write-Host "❌ requirements.txt NOT found"
           }
 
-      - name: Install Jupyter and dependencies
-        run: |
-          pip install jupyter nbconvert ipykernel
-          python -m ipykernel install --user --name=python3
-
-      - name: Verify data files exist
-        shell: powershell
-        run: |
-          Write-Host "Current directory: $(Get-Location)"
-          Write-Host "Checking for parquet files..."
-          $files = Get-ChildItem -Path "1_LIB/nyiso/nyiso_parquet" -Recurse -Filter "*.parquet" -ErrorAction SilentlyContinue
-          if ($files) {
-            Write-Host "Found $($files.Count) parquet file(s)"
-            $files | Select-Object -First 5 | ForEach-Object { Write-Host "  $($_.FullName)" }
-          } else {
-            Write-Host "WARNING: No parquet files found!"
-          }
+      - name: Install Jupyter
+        run: python -m pip install jupyter nbconvert
 
       - name: Run notebook
         run: |
-          jupyter nbconvert --to notebook --execute 3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb --inplace --ExecutePreprocessor.timeout=600
-        continue-on-error: true  # Prevents workflow from failing if notebook has errors
-
-      - name: Upload notebook output on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: notebook-output
-          path: 3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb
-
-      - name: Check for execution errors
-        shell: powershell
-        run: |
-          $notebook = Get-Content "3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb" | ConvertFrom-Json
-          $errors = $notebook.cells | Where-Object { $_.cell_type -eq "code" } | ForEach-Object { 
-            $_.outputs | Where-Object { $_.output_type -eq "error" }
-          }
-          if ($errors) {
-            Write-Host "Notebook execution had errors:"
-            $errors | ForEach-Object { Write-Host $_.evalue }
-            exit 1
-          } else {
-            Write-Host "Notebook executed successfully!"
-          }
+          jupyter nbconvert --to notebook --execute `
+            3_OUTPUT/3_svr/SVMDaily.ipynb `
+            --inplace
