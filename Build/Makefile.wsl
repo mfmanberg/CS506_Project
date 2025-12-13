@@ -15,10 +15,12 @@ REQUIREMENTS := $(PROJECT_ROOT)/Dependencies/requirements.txt
 
 # Notebook paths (relative to PROJECT_ROOT)
 NOTEBOOKS := \
+	$(PROJECT_ROOT)/2_FIGURES/2_data_exploration/nyiso_data_exploration.ipynb \
 	$(PROJECT_ROOT)/3_OUTPUT/3_linear_regression/linear_regression.ipynb \
 	$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVM_Trunc.ipynb \
 	$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVMDaily.ipynb \
 	$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb \
+	$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVMHourly.ipynb \
 	$(PROJECT_ROOT)/3_OUTPUT/3_xg_boost/ComparisonMetrics.ipynb \
 	$(PROJECT_ROOT)/3_OUTPUT/3_xg_boost/XGBoost_PostMid.ipynb \
 	$(PROJECT_ROOT)/3_OUTPUT/3_xg_boost/XGBoost_Testing.ipynb
@@ -64,16 +66,19 @@ run: check-deps
 	export PYTHONPATH="$(PROJECT_ROOT):$(PROJECT_ROOT)/Build:$$PYTHONPATH" && \
 	COMPLETED=0 && \
 	FAILED=0 && \
-	TOTAL=7 && \
-	for i in 1 2 3 4 5 6 7; do \
+	TOTAL=9 && \
+	mkdir -p /tmp/papermill_output && \
+	for i in 1 2 3 4 5 6 7 8 9; do \
 		case $$i in \
-			1) NB="$(PROJECT_ROOT)/3_OUTPUT/3_linear_regression/linear_regression.ipynb";; \
-			2) NB="$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVM_Trunc.ipynb";; \
-			3) NB="$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVMDaily.ipynb";; \
-			4) NB="$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb";; \
-			5) NB="$(PROJECT_ROOT)/3_OUTPUT/3_xg_boost/ComparisonMetrics.ipynb";; \
-			6) NB="$(PROJECT_ROOT)/3_OUTPUT/3_xg_boost/XGBoost_PostMid.ipynb";; \
-			7) NB="$(PROJECT_ROOT)/3_OUTPUT/3_xg_boost/XGBoost_Testing.ipynb";; \
+			1) NB="$(PROJECT_ROOT)/2_FIGURES/2_data_exploration/nyiso_data_exploration.ipynb";; \
+			2) NB="$(PROJECT_ROOT)/3_OUTPUT/3_linear_regression/linear_regression.ipynb";; \
+			3) NB="$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVM_Trunc.ipynb";; \
+			4) NB="$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVMDaily.ipynb";; \
+			5) NB="$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb";; \
+			6) NB="$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVMHourly.ipynb";; \
+			7) NB="$(PROJECT_ROOT)/3_OUTPUT/3_xg_boost/ComparisonMetrics.ipynb";; \
+			8) NB="$(PROJECT_ROOT)/3_OUTPUT/3_xg_boost/XGBoost_PostMid.ipynb";; \
+			9) NB="$(PROJECT_ROOT)/3_OUTPUT/3_xg_boost/XGBoost_Testing.ipynb";; \
 		esac; \
 		echo ""; \
 		echo "[$$i/$$TOTAL] Executing: $$(basename $$NB)"; \
@@ -83,7 +88,9 @@ run: check-deps
 			FAILED=$$((FAILED + 1)); \
 			continue; \
 		fi; \
-		if $(PAPERMILL) "$$NB" "$$NB" --kernel python3 --execution-timeout 3600 --cwd "$(PROJECT_ROOT)" 2>&1; then \
+		TEMP_NB="/tmp/papermill_output/$$(basename $$NB)"; \
+		if $(PAPERMILL) "$$NB" "$$TEMP_NB" --kernel python3 --execution-timeout 3600 --cwd "$(PROJECT_ROOT)" 2>&1; then \
+			cp "$$TEMP_NB" "$$NB"; \
 			echo "[SUCCESS] $$(basename $$NB)"; \
 			COMPLETED=$$((COMPLETED + 1)); \
 		else \
@@ -100,6 +107,13 @@ run: check-deps
 	echo "============================================================"
 
 # Run a specific notebook
+run-nyiso-explore: check-deps
+	@source $(VENV_DIR)/bin/activate && \
+	export PYTHONPATH="$(PROJECT_ROOT):$(PROJECT_ROOT)/Build:$$PYTHONPATH" && \
+	$(PAPERMILL) $(PROJECT_ROOT)/2_FIGURES/2_data_exploration/nyiso_data_exploration.ipynb \
+		$(PROJECT_ROOT)/2_FIGURES/2_data_exploration/nyiso_data_exploration.ipynb \
+		--kernel python3 --execution-timeout 3600 --cwd "$(PROJECT_ROOT)"
+
 run-linear: check-deps
 	@source $(VENV_DIR)/bin/activate && \
 	export PYTHONPATH="$(PROJECT_ROOT):$(PROJECT_ROOT)/Build:$$PYTHONPATH" && \
@@ -126,6 +140,13 @@ run-svm-nomeso: check-deps
 	export PYTHONPATH="$(PROJECT_ROOT):$(PROJECT_ROOT)/Build:$$PYTHONPATH" && \
 	$(PAPERMILL) $(PROJECT_ROOT)/3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb \
 		$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb \
+		--kernel python3 --execution-timeout 3600 --cwd "$(PROJECT_ROOT)"
+
+run-svm-hourly: check-deps
+	@source $(VENV_DIR)/bin/activate && \
+	export PYTHONPATH="$(PROJECT_ROOT):$(PROJECT_ROOT)/Build:$$PYTHONPATH" && \
+	$(PAPERMILL) $(PROJECT_ROOT)/3_OUTPUT/3_svr/SVMHourly.ipynb \
+		$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVMHourly.ipynb \
 		--kernel python3 --execution-timeout 3600 --cwd "$(PROJECT_ROOT)"
 
 run-comparison: check-deps
@@ -177,10 +198,12 @@ help:
 	@echo "  run              - Execute all notebooks"
 	@echo ""
 	@echo "Individual Notebooks:"
+	@echo "  run-nyiso-explore - NYISO data exploration"
 	@echo "  run-linear       - Linear regression"
 	@echo "  run-svm-trunc    - SVM truncated"
 	@echo "  run-svm-daily    - SVM daily"
 	@echo "  run-svm-nomeso   - SVM without mesonet"
+	@echo "  run-svm-hourly   - SVM hourly"
 	@echo "  run-comparison   - Comparison metrics"
 	@echo "  run-xgboost-post - XGBoost post-midterm"
 	@echo "  run-xgboost-test - XGBoost testing"

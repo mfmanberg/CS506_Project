@@ -145,10 +145,12 @@ def main():
     log_file = build_folder / 'model_results.log'  # Output to Build folder
     
     notebooks = [
+        project_root / '2_FIGURES' / '2_data_exploration' / 'nyiso_data_exploration.ipynb',
         project_root / '3_OUTPUT' / '3_linear_regression' / 'linear_regression.ipynb',
         project_root / '3_OUTPUT' / '3_svr' / 'SVM_Trunc.ipynb',
         project_root / '3_OUTPUT' / '3_svr' / 'SVMDaily.ipynb',
         project_root / '3_OUTPUT' / '3_svr' / 'SVMDailywoutMeso.ipynb',
+        project_root / '3_OUTPUT' / '3_svr' / 'SVMHourly.ipynb',
         project_root / '3_OUTPUT' / '3_xg_boost' / 'ComparisonMetrics.ipynb',
         project_root / '3_OUTPUT' / '3_xg_boost' / 'XGBoost_PostMid.ipynb',
         project_root / '3_OUTPUT' / '3_xg_boost' / 'XGBoost_Testing.ipynb',

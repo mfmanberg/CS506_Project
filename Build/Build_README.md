@@ -1,66 +1,219 @@
-# Makefile Directory
+# Build System Documentation
 
-This directory contains all build automation and execution scripts for the CS506 NYISO Load Forecasting project.
+Automated execution system for 9 Jupyter notebooks with dependency management and metric extraction.
+
+## Quick Start
+
+```bash
+# Windows with WSL - VALIDATED!!!!!
+Build\run_build.bat 
+
+# Linux / WSL Terminal
+make -f Build/Makefile.wsl run
+```
+
+**First-time setup**: Auto-installs dependencies from `Dependencies/requirements.txt`  
+**Execution time**: 30-60 minutes for all 9 notebooks  
+**Output**: Results logged to `Build/model_results.log`
+
+---
 
 ## Files
 
-### Core Execution
-- **Makefile.wsl** - Linux makefile for automated notebook execution
-- **RunNotebooks.ps1** - PowerShell wrapper for Windows
-- **path_utils.py** - Cross-platform path utilities
-- **extract_results.py** - Result extraction from executed notebooks
-- **test_execution.py** - Verify notebook execution completion
-
-## Usage
-
-### From Project Root (Recommended)
-
-**Windows (PowerShell):**
-```powershell
-.\Makefile\RunNotebooks.ps1
+```
+Build/
+├── Makefile.wsl              # Build automation (WSL/Linux)
+├── run_build.bat             # Windows wrapper
+├── path_utils.py             # Cross-platform paths
+├── extract_results.py        # Metric extraction
+├── test_notebook_execution.py# Diagnostics
+└── model_results.log         # Results (generated)
 ```
 
-**WSL/Linux:**
+---
+
+## How It Works
+
+### Makefile.wsl
+Main build orchestration for WSL/Linux:
+- Auto-detects `PROJECT_ROOT` from Makefile location
+- Checks/installs dependencies (compares `requirements.txt` timestamp)
+- Executes 9 notebooks via papermill (3600s timeout each)
+- Exports `PYTHONPATH="$PROJECT_ROOT:$PROJECT_ROOT/Build"`
+- Outputs to `/tmp/papermill_output/` then copies back (prevents file locks)
+
+**Key Targets**:
 ```bash
-make -f Makefile/Makefile.wsl
+make -f Build/Makefile.wsl run              # Execute all notebooks
+make -f Build/Makefile.wsl run-linear       # Single notebook
+make -f Build/Makefile.wsl setup            # Create venv
+make -f Build/Makefile.wsl clean-outputs    # Clear outputs
+make -f Build/Makefile.wsl help             # Show all targets
 ```
 
-### Extract Results
+### run_build.bat
+Windows wrapper that:
+1. Detects script location using `%~dp0` (no hardcoded paths)
+2. Converts Windows path to WSL: `C:\Users\...` → `/mnt/c/Users/...`
+3. Calls WSL: `wsl bash -c "cd <wsl_path> && make -f Build/Makefile.wsl run"`
+
+### path_utils.py
+Cross-platform path resolver used in all notebooks:
+```python
+from path_utils import get_project_root
+
+project_root = get_project_root()  # Auto-detects from Build/ location
+data_path = project_root / "1_LIB" / "master" / "master.parquet"
+```
+
+### extract_results.py
+Parses executed notebooks (JSON format), extracts:
+- Cell execution counts
+- Metrics: MSE, RMSE, R², MAE (via regex)
+- Appends to `Build/model_results.log` with timestamp
+
+---
+
+## Dependency Management
+
+Auto-installs before each build:
 ```bash
-python Makefile/extract_results.py
+if requirements.txt newer than .venv_wsl/.deps_installed:
+  pip install -r requirements.txt
+  touch .venv_wsl/.deps_installed
 ```
 
-### Test Execution
+Manual setup:
 ```bash
-python Makefile/test_execution.py <notebook_path>
+make -f Build/Makefile.wsl setup
 ```
 
-## Configuration
+---
 
-All scripts automatically detect the project root and use absolute paths for reproducibility.
+## Reproducibility
 
-**Key Features:**
-- ✅ Dynamic path resolution
-- ✅ Cross-platform compatibility (Windows/WSL/Linux)
-- ✅ Automated error handling
-- ✅ Result logging to `model_results.log`
-- ✅ Works from any directory
+✅ No hardcoded paths (auto-detected from script location)  
+✅ Auto dependency management  
+✅ Isolated `.venv_wsl` environment  
+✅ Works on WSL and Linux with same commands  
 
-## Requirements
+**Setup on new machine**:
+```bash
+git clone <repo_url>
+cd CS506_Project
+Build\run_build.bat  # Windows + WSL
+# OR
+make -f Build/Makefile.wsl run  # Linux
+```
 
-- Python 3.12+ with virtual environment at `.venv_wsl/`
-- All dependencies from `Dependencies/requirements.txt` installed
-- Data file: `1_LIB/master/master.parquet` (38MB via Git LFS)
+---
 
-## Execution Flow
+## Troubleshooting
 
-1. **Activate virtual environment** → `.venv_wsl/bin/activate`
-2. **Execute 7 notebooks** → via papermill
-3. **Extract results** → `extract_results.py`
-4. **Log output** → `model_results.log`
+| Issue | Solution |
+|-------|----------|
+| Build fails immediately | `make -f Build/Makefile.wsl setup` |
+| Notebooks abort | Don't run commands in same terminal during build<br>Use `run_build.bat` (separate window) |
+| Import errors | Check `PYTHONPATH` exported in Makefile |
+| File locks | Close notebooks in VS Code before build |
+| Dependency errors | `rm .venv_wsl/.deps_installed && make -f Build/Makefile.wsl run` |
+
+---
+
+## Advanced Usage
+
+```bash
+# Individual notebooks
+make -f Build/Makefile.wsl run-linear
+make -f Build/Makefile.wsl run-svm-daily
+
+# Clear outputs and rerun
+make -f Build/Makefile.wsl clean-outputs run
+
+# View results
+cat Build/model_results.log
+tail -50 Build/model_results.log
+
+# Diagnostics
+python3 Build/test_notebook_execution.py
+```
+
+---
 
 ## Performance
 
-- **Single notebook:** 30-240 seconds
-- **Full makefile (7 notebooks):** 30-60 minutes
-- **Resource usage:** ~8GB RAM, 4 CPU cores
+- **Total time**: 30-60 minutes (9 notebooks)
+- **Memory**: 300-500 MB per notebook
+- **Data**: master.parquet (38 MB file, 339 MB in memory)
+- **Execution**: Sequential (one notebook at a time)
+
+---
+
+## Adding Notebooks
+
+1. Add to `Makefile.wsl` NOTEBOOKS list
+2. Update `run` target (increment TOTAL, add case)
+3. Add to `extract_results.py` notebooks list
+4. Use `path_utils` in notebook:
+   ```python
+   from path_utils import get_project_root
+   project_root = get_project_root()
+   ```
+
+---
+
+---
+
+## WSL vs Linux Commands
+
+### Running on WSL (Windows Subsystem for Linux)
+
+```bash
+# From Windows (PowerShell/CMD)
+Build\run_build.bat
+
+# Or from WSL terminal
+cd /mnt/c/Users/<username>/path/to/CS506_Project
+make -f Build/Makefile.wsl run
+```
+
+### Running on Native Linux
+
+```bash
+# From project root
+cd ~/CS506_Project  # or wherever you cloned the repo
+make -f Build/Makefile.wsl run
+```
+
+**Key Differences**:
+- **WSL**: Paths use `/mnt/c/Users/...`, filesystem bridge adds slight overhead
+- **Linux**: Paths use `/home/user/...`, native filesystem (faster)
+- **Makefile**: Identical for both (auto-detects environment)
+
+---
+
+## Support
+
+**Troubleshooting**:
+```bash
+python3 Build/test_notebook_execution.py  # Run diagnostics
+cat Build/model_results.log               # View results
+make -f Build/Makefile.wsl help           # Show all targets
+
+
+```
+**Developer Environment Details**
+WSL2 Configuration
+WSL Version: 2.6.1.0
+Kernel: 6.6.87.2-1 (microsoft-standard-WSL2)
+WSLg: 1.0.66 (GUI support)
+Windows Version: 10.0.26200.7462
+Ubuntu Distribution
+Version: Ubuntu 24.04.3 LTS (Noble Numbat)
+Codename: noble
+Release: 24.04
+Python Environment
+Python Version: 3.12.3
+Virtual Environment: .venv_wsl (WSL-specific venv)
+Location: /mnt/c/Users/Matt/Desktop/CS506/CS506_Project/.venv_wsl
+Total Packages: 141 installed packages
