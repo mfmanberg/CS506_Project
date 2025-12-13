@@ -139,7 +139,9 @@ def log_results(all_results, log_file):
 
 def main():
     """Extract results from all target notebooks."""
-    project_root = Path(__file__).parent.resolve()  # Get absolute path
+    # Get the Build folder, then go up to project root
+    build_folder = Path(__file__).parent.resolve()
+    project_root = build_folder.parent  # Go up one level to project root
     log_file = project_root / 'model_results.log'
     
     notebooks = [
