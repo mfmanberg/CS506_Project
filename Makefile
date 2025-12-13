@@ -14,7 +14,8 @@ FIRST_PASS_NOTEBOOK = 2_FIGURES\1_data_wrangling\1st_pass.ipynb
 
 # Additional notebooks (add your analysis notebooks here)
 # Note: Use spaces (not commas) to separate notebook paths
-ANALYSIS_NOTEBOOKS = linear_regression.ipynb SVM_Trunc.ipynb SVMDaily.ipynb SVMDailywoutMeso.ipynb ComparisionMetrics.ipynb XGBoost_PostMid.ipynb XGBoost_Testing.ipynb
+# Note: Paths are relative to the Makefile location (project root)
+ANALYSIS_NOTEBOOKS = 3_OUTPUT\3_linear_regression\linear_regression.ipynb 3_OUTPUT\3_svr\SVM_Trunc.ipynb 3_OUTPUT\3_svr\SVMDaily.ipynb 3_OUTPUT\3_svr\SVMDailywoutMeso.ipynb 3_OUTPUT\3_xg_boost\ComparisonMetrics.ipynb 3_OUTPUT\3_xg_boost\XGBoost_PostMid.ipynb 3_OUTPUT\3_xg_boost\XGBoost_Testing.ipynb
 # Example: 2_FIGURES\2_analysis\analysis.ipynb 2_FIGURES\3_visualization\plots.ipynb
 
 # Completion markers directory
@@ -62,27 +63,38 @@ run-analysis:
 	)
 	@echo === Running Analysis Notebooks ===
 	@if not exist "$(COMPLETION_DIR)" mkdir "$(COMPLETION_DIR)"
-	@setlocal enabledelayedexpansion && for %%f in ($(ANALYSIS_NOTEBOOKS)) do ( \
-		set "done_marker=$(COMPLETION_DIR)\%%~nf.done" && \
-		if exist "!done_marker!" ( \
-			echo ✓ %%~nxf already complete - skipping \
-		) else ( \
-			echo → Running %%~nxf... && \
-			if "$(ENABLE_TIMEOUT)"=="TRUE" ( \
-				jupyter nbconvert --to notebook --execute --inplace "%%f" --ExecutePreprocessor.timeout=$(TIMEOUT_SECONDS) && \
-				echo ✓ %%~nxf complete && \
-				echo. > "!done_marker!" \
-			) else ( \
-				jupyter nbconvert --to notebook --execute --inplace "%%f" && \
-				echo ✓ %%~nxf complete && \
-				echo. > "!done_marker!" \
-			) \
-		) \
-	)
 	@if "$(ANALYSIS_NOTEBOOKS)"=="" ( \
 		echo No analysis notebooks configured. Add them to ANALYSIS_NOTEBOOKS variable. \
 	) else ( \
-		echo ✓ All analysis notebooks complete \
+		setlocal enabledelayedexpansion && ( \
+			for %%f in ($(ANALYSIS_NOTEBOOKS)) do ( \
+				set "done_marker=$(COMPLETION_DIR)\%%~nf.done" && \
+				if exist "!done_marker!" ( \
+					echo ✓ %%~nxf already complete - skipping \
+				) else ( \
+					if not exist "%%f" ( \
+						echo ⚠ WARNING: %%~nxf not found - skipping \
+					) else ( \
+						echo → Running %%~nxf... && \
+						if "$(ENABLE_TIMEOUT)"=="TRUE" ( \
+							jupyter nbconvert --to notebook --execute --inplace "%%f" --ExecutePreprocessor.timeout=$(TIMEOUT_SECONDS) && ( \
+								echo ✓ %%~nxf complete && \
+								echo. > "!done_marker!" \
+							) || ( \
+								echo ✗ %%~nxf failed or timed out ^(timeout=$(TIMEOUT_SECONDS)s^) \
+							) \
+						) else ( \
+							jupyter nbconvert --to notebook --execute --inplace "%%f" && ( \
+								echo ✓ %%~nxf complete && \
+								echo. > "!done_marker!" \
+							) || ( \
+								echo ✗ %%~nxf failed \
+							) \
+						) \
+					) \
+				) \
+			) \
+		) && endlocal && echo ✓ All analysis notebooks processed \
 	)
 
 # Mark a notebook as complete without running (for heavy computations >10 min)

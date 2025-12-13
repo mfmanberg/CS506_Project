@@ -1,0 +1,94 @@
+name: Run Analysis Notebooks
+
+on:
+  workflow_dispatch:  # Manual trigger
+  push:
+    branches:
+      - main
+    paths:
+      - '3_OUTPUT/3_linear_regression/linear_regression.ipynb'
+      - '3_OUTPUT/3_svr/SVM_Trunc.ipynb'
+      - '3_OUTPUT/3_xg_boost/XGBoost_Testing.ipynb'
+      - '1_LIB/master/master.parquet'
+
+jobs:
+  run-notebooks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install jupyter nbconvert pandas numpy scikit-learn xgboost matplotlib seaborn pyarrow
+      
+      - name: Check for master.parquet
+        run: |
+          if [ ! -f "1_LIB/master/master.parquet" ]; then
+            echo "⚠ Warning: master.parquet not found. Notebooks may fail."
+          else
+            echo "✓ master.parquet found"
+          fi
+      
+      - name: Run Linear Regression Notebook
+        run: |
+          echo "→ Running linear_regression.ipynb..."
+          jupyter nbconvert \
+            --to notebook \
+            --execute \
+            --inplace \
+            --ExecutePreprocessor.timeout=1200 \
+            "3_OUTPUT/3_linear_regression/linear_regression.ipynb"
+          echo "✓ Linear Regression complete"
+      
+      - name: Run SVM Truncated Notebook
+        run: |
+          echo "→ Running SVM_Trunc.ipynb..."
+          jupyter nbconvert \
+            --to notebook \
+            --execute \
+            --inplace \
+            --ExecutePreprocessor.timeout=1200 \
+            "3_OUTPUT/3_svr/SVM_Trunc.ipynb"
+          echo "✓ SVM Truncated complete"
+      
+      - name: Run XGBoost Testing Notebook
+        run: |
+          echo "→ Running XGBoost_Testing.ipynb..."
+          jupyter nbconvert \
+            --to notebook \
+            --execute \
+            --inplace \
+            --ExecutePreprocessor.timeout=1200 \
+            "3_OUTPUT/3_xg_boost/XGBoost_Testing.ipynb"
+          echo "✓ XGBoost Testing complete"
+      
+      - name: Upload executed notebooks
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: executed-notebooks
+          path: |
+            3_OUTPUT/3_linear_regression/linear_regression.ipynb
+            3_OUTPUT/3_svr/SVM_Trunc.ipynb
+            3_OUTPUT/3_xg_boost/XGBoost_Testing.ipynb
+      
+      - name: Commit and push changes
+        if: success()
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add 3_OUTPUT/3_linear_regression/linear_regression.ipynb
+          git add 3_OUTPUT/3_svr/SVM_Trunc.ipynb
+          git add 3_OUTPUT/3_xg_boost/XGBoost_Testing.ipynb
+          git diff --staged --quiet || git commit -m "chore: update executed notebooks [skip ci]"
+          git push
