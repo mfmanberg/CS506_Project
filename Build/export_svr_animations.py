@@ -175,8 +175,8 @@ def main():
             output_path,
             anim_config['title'],
             window=min(100, anim_config['n_points'] // 10),
-            fps=20,
-            duration=8
+            fps=15,
+            duration=15
         )
     
     print("\n" + "="*60)
