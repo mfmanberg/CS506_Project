@@ -1,0 +1,30 @@
+{
+  "export_date": "2025-12-13T14:59:21.573828",
+  "project_root": "C:\\Users\\Matt\\Desktop\\CS506\\CS506_Project",
+  "output_directory": "C:\\Users\\Matt\\Desktop\\CS506\\CS506_Project\\2_FIGURES\\FIGURES",
+  "total_files": 17,
+  "files": [
+    "2_FIGURES\\FIGURES\\2023_top10_names_avg_load.png",
+    "2_FIGURES\\FIGURES\\2023_total_load_per_day.png",
+    "2_FIGURES\\FIGURES\\3_xg_boost_baseline_performance.png",
+    "2_FIGURES\\FIGURES\\3_xg_boost_model_comparison.png",
+    "2_FIGURES\\FIGURES\\day_by_day_jan_2023.png",
+    "2_FIGURES\\FIGURES\\load_with_losses.png",
+    "2_FIGURES\\FIGURES\\nyiso_zones.png",
+    "2_FIGURES\\FIGURES\\svr_animations\\svr_15min_animation.gif",
+    "2_FIGURES\\FIGURES\\svr_animations\\svr_5min_animation.gif",
+    "2_FIGURES\\FIGURES\\svr_animations\\svr_daily_loadonly_animation.gif",
+    "2_FIGURES\\FIGURES\\svr_animations\\svr_daily_weather_animation.gif",
+    "2_FIGURES\\FIGURES\\svr_animations\\svr_hourly_animation.gif",
+    "2_FIGURES\\FIGURES\\svr_animations\\svr_hourly_trunc_animation.gif",
+    "2_FIGURES\\FIGURES\\svr_readme_graph.png",
+    "2_FIGURES\\FIGURES\\total_load_2023_15min.png",
+    "2_FIGURES\\FIGURES\\vault_baseline_performance.png",
+    "2_FIGURES\\FIGURES\\vault_model_comparison.png"
+  ],
+  "summary": {
+    "png_count": 11,
+    "gif_count": 6,
+    "csv_count": 0
+  }
+}
