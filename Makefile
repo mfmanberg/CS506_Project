@@ -13,7 +13,8 @@ MASTER_PARQUET = 1_LIB\master\master.parquet
 FIRST_PASS_NOTEBOOK = 2_FIGURES\1_data_wrangling\1st_pass.ipynb
 
 # Additional notebooks (add your analysis notebooks here)
-ANALYSIS_NOTEBOOKS = linear_regression.ipynb, SVM_Trunc.ipynb, SVMDaily.ipynb, SVMDailywoutMeso.ipynb, ComparisionMetrics.ipynb, XGBoost_PostMid_ipynb, XGBoost_Testing.ipynb
+# Note: Use spaces (not commas) to separate notebook paths
+ANALYSIS_NOTEBOOKS = linear_regression.ipynb SVM_Trunc.ipynb SVMDaily.ipynb SVMDailywoutMeso.ipynb ComparisionMetrics.ipynb XGBoost_PostMid.ipynb XGBoost_Testing.ipynb
 # Example: 2_FIGURES\2_analysis\analysis.ipynb 2_FIGURES\3_visualization\plots.ipynb
 
 # Completion markers directory
@@ -61,8 +62,7 @@ run-analysis:
 	)
 	@echo === Running Analysis Notebooks ===
 	@if not exist "$(COMPLETION_DIR)" mkdir "$(COMPLETION_DIR)"
-	@for %%f in ($(ANALYSIS_NOTEBOOKS)) do ( \
-		set "nb=%%f" && \
+	@setlocal enabledelayedexpansion && for %%f in ($(ANALYSIS_NOTEBOOKS)) do ( \
 		set "done_marker=$(COMPLETION_DIR)\%%~nf.done" && \
 		if exist "!done_marker!" ( \
 			echo ✓ %%~nxf already complete - skipping \
@@ -93,9 +93,11 @@ mark-complete:
 		exit /b 1 \
 	)
 	@if not exist "$(COMPLETION_DIR)" mkdir "$(COMPLETION_DIR)"
-	@for %%f in ("$(NB)") do set "nb_name=%%~nf"
-	@echo. > "$(COMPLETION_DIR)\%nb_name%.done"
-	@echo ✓ Marked $(NB) as complete
+	@setlocal enabledelayedexpansion && for %%f in ("$(NB)") do ( \
+		set "nb_name=%%~nf" && \
+		echo. > "$(COMPLETION_DIR)\!nb_name!.done" && \
+		echo ✓ Marked %%~nxf as complete \
+	)
 
 # List completion status
 .PHONY: list-status
@@ -112,8 +114,7 @@ list-status:
 	)
 	@echo.
 	@echo Analysis Notebooks:
-	@for %%f in ($(ANALYSIS_NOTEBOOKS)) do ( \
-		set "nb=%%f" && \
+	@setlocal enabledelayedexpansion && for %%f in ($(ANALYSIS_NOTEBOOKS)) do ( \
 		set "done_marker=$(COMPLETION_DIR)\%%~nf.done" && \
 		if exist "!done_marker!" ( \
 			echo   ✓ %%~nxf - COMPLETE \
