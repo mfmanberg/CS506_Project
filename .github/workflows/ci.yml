@@ -32,5 +32,5 @@ jobs:
       - name: Run notebook
         run: |
           jupyter nbconvert --to notebook --execute `
-            3_OUTPUT/3_svr/SVMDaily.ipynb `
+            3_OUTPUT/3_xg_boost/XGBoost_PostMid_ipynb `
             --inplace
