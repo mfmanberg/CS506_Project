@@ -175,7 +175,7 @@ def main():
             output_path,
             anim_config['title'],
             window=min(100, anim_config['n_points'] // 10),
-            fps=15,
+            fps=5,
             duration=15
         )
     
