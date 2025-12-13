@@ -15,3 +15,15 @@ nyisoenv/*
 # Bytecode / temp
 __pycache__/
 *.pyc
+
+# Virtual environments
+.venv_wsl/
+venv_wsl/
+venv/
+.venv/
+
+# Model files (large binaries)
+*.joblib
+
+# Logs
+model_results.log
