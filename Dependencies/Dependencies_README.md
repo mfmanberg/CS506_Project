@@ -9,10 +9,10 @@
 **Requirements File:** [requirements.txt](requirements.txt)
 
 ### Current Environment Status
-✅ **All dependencies installed and verified**  
-✅ **No broken requirements** (`pip check` passed)  
-✅ **GitHub Actions compatible**  
-✅ **WSL2 + Ubuntu 24.04.3 LTS tested**
+ **All dependencies installed and verified**  
+ **No broken requirements** (`pip check` passed)  
+ **GitHub Actions compatible**  
+ **WSL2 + Ubuntu 24.04.3 LTS tested**
 
 ---
 
@@ -94,17 +94,17 @@ bash Dependencies/test_dependencies.sh
 ### Workflow Verification
 All 3 GitHub Actions workflows use the same requirements.txt:
 
-**✅ Linear Regression Test** (Run #20191651950)
+** Linear Regression Test** (Run #20191651950)
 - Duration: 4m 5s
 - All dependencies installed successfully
 - Notebook executed without errors
 
-**✅ XGBoost Testing** (Run #20191651954)
+**XGBoost Testing** (Run #20191651954)
 - Duration: 1m 34s
 - All dependencies installed successfully
 - Notebook executed without errors
 
-**✅ SVM Daily Test** (Run #20191652644)
+** SVM Daily Test** (Run #20191652644)
 - Duration: 1m 23s
 - All dependencies installed successfully
 - Notebook executed without errors
@@ -159,7 +159,7 @@ Python: 3.12.3
 pip: 25.3
 Virtual Environment: .venv_wsl
 Total Packages: 139 (121 explicit + 18 transitive)
-Status: ✅ WORKING (verified December 13, 2025)
+Status:  WORKING (verified December 13, 2025)
 ### Supporting Dependencies (110 packages)
 All transitive dependencies and utilities properly installed and verified.
 
@@ -173,7 +173,7 @@ OS: Windows 11 with WSL2
 Distribution: Ubuntu 22.04 LTS
 Python: 3.12.3
 Virtual Environment: .venv_wsl
-Status: ✅ WORKING
+Status:  WORKING
 ```
 
 ### Configuration 2: GitHub Actions (Tested)
@@ -181,14 +181,14 @@ Status: ✅ WORKING
 OS: ubuntu-latest
 Python: 3.12 / 3.13
 Virtual Environment: GitHub Actions managed
-Status: ✅ WORKING
+Status:  WORKING
 ```
 
 ### Configuration 3: Windows Native
 ```
 OS: Windows 11
 Python: 3.12
-Status: ⚠️ NOT RECOMMENDED
+Status: !!!! NOT RECOMMENDED !!!!
 Reason: Asyncio issues with Jupyter kernel
 Workaround: Use WSL2 instead
 ```
@@ -281,13 +281,20 @@ pip check
 
 ---
 
-## 11. Conclusion
+## 10. Conclusion
 
-### ✅ All Tests Passed
 
-**Dependencies:** All 121 explicit packages + 18 transitive = 139 total installed and verified  
-**Conflicts:** None (`pip check` clean)  
-**E# Ensure Python 3.12 is installed
+### Next Steps for New Users
+
+1. **Clone repository:**
+   ```bash
+   git clone https://github.com/mfmanberg/CS506_Project.git
+   cd CS506_Project
+   ```
+
+2. **Setup environment (WSL):**
+   ```bash
+   # Ensure Python 3.12 is installed
    sudo apt update && sudo apt install python3.12 python3.12-venv
    
    # Create and activate virtual environment
@@ -303,6 +310,18 @@ pip check
    ```
 
 3. **Run notebooks:**
+   ```bash
+   # From Windows: Full build (all 9 notebooks)
+   Build\run_build.bat
+   
+   # From WSL/Linux: Full build
+   make -f Build/Makefile.wsl run
+   
+   # Test single notebook
+   bash Dependencies/test_dependencies.sh
+   ```
+
+4. **View results:**
    ```bash
    # Check build results
    cat Build/model_results.log
@@ -326,52 +345,15 @@ pip check
 **Report Generated:** December 13, 2025  
 **Test Environment:** WSL2 2.6.1.0, Ubuntu 24.04.3 LTS, Python 3.12.3, pip 25.3  
 **Total Packages:** 139 installed (121 explicit + 18 transitive)  
-**Status:** ✅ All dependencies verified, no conflicts
-### ✅ All Tests Passed
-
-**Dependencies:** All 125 packages installed and verified
-**Execution:** Papermill successfully executes notebooks
-**Cross-Platform:** Works on WSL, Linux, and GitHub Actions
-**Reproducibility:** requirements.txt enables one-command setup
-**Documentation:** Comprehensive setup instructions included
-
-### Next Steps for New Users
-
-1. **Clone repository:**
-   ```bash
-   git clone https://github.com/mfmanberg/CS506_Project.git
-   cd CS506_Project
-   ```
-
-2. **Setup environment (WSL):**
-   ```bash
-   python3.12 -m venv .venv_wsl
-   source .venv_wsl/bin/activate
-   pip install --upgrade pip
-   pip install -r requirements.txt
-   ```
-
-3. **Run notebooks:**
-   ```bash
-   # Single notebook
-   ./RunNotebooks.ps1
-   
-   # Or full makefile
-   make -f Makefile.wsl
-   ```
-
-4. **View results:**
-   ```bash
-   cat model_results.log
-   ```
-
-### Support
-- GitHub Actions: Automatically run on every push
-- Documentation: See README.md and TEST_RESULTS.md
-- Issues: Open on GitHub repository
-
----
-
-**Report Generated:** December 13, 2025  
-**Test Environment:** WSL2 Ubuntu 22.04, Python 3.12.3  
+**Status:** ✅ All dependencies verified, no conflicts  
 **Project:** CS506 NYISO Load Forecasting
+
+
+## Developer Validation: All Tests Passed
+
+**Dependencies:** All 121 explicit packages + 18 transitive = 139 total installed and verified  
+**Conflicts:** None (`pip check` clean)  
+**Execution:** Papermill successfully executes all 9 notebooks  
+**Cross-Platform:** Works on WSL2 (Ubuntu 24.04), native Linux, and GitHub Actions  
+**Reproducibility:** requirements.txt enables one-command setup  
+**Documentation:** Comprehensive setup instructions with test scripts
