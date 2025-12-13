@@ -1,4 +1,4 @@
-name: XGBoost Testing
+name: Linear Regression Test
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-xgboost:
+  test-linear-regression:
     runs-on: ubuntu-latest
     
     steps:
@@ -26,23 +26,23 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r Dependencies/requirements.txt
+          pip install -r requirements.txt
           pip install papermill jupyter nbformat
 
       - name: Verify notebook exists
         run: |
-          if [ -f "3_OUTPUT/3_xg_boost/XGBoost_Testing.ipynb" ]; then
+          if [ -f "3_OUTPUT/3_linear_regression/linear_regression.ipynb" ]; then
             echo "✅ Notebook found"
           else
             echo "❌ Notebook not found"
             exit 1
           fi
 
-      - name: Execute XGBoost_Testing.ipynb
+      - name: Execute linear_regression.ipynb
         run: |
           papermill \
-            3_OUTPUT/3_xg_boost/XGBoost_Testing.ipynb \
-            3_OUTPUT/3_xg_boost/XGBoost_Testing_output.ipynb \
+            3_OUTPUT/3_linear_regression/linear_regression.ipynb \
+            3_OUTPUT/3_linear_regression/linear_regression_output.ipynb \
             --kernel python3 \
             --execution-timeout 1800
         continue-on-error: false
@@ -50,18 +50,18 @@ jobs:
       - name: Extract results
         if: always()
         run: |
-          python Build/extract_results.py || echo "Extraction completed"
+          python extract_results.py || echo "Extraction failed"
 
       - name: Upload executed notebook
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: xgboost-testing-results
+          name: linear-regression-results
           path: |
-            3_OUTPUT/3_xg_boost/XGBoost_Testing_output.ipynb
+            3_OUTPUT/3_linear_regression/linear_regression_output.ipynb
             model_results.log
           retention-days: 30
 
       - name: Verify execution
         run: |
-          python test_execution.py || echo "Verification completed"
+          python test_execution.py || echo "Verification completed with warnings"

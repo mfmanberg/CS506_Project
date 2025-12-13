@@ -23,10 +23,10 @@ jobs:
       - name: Install dependencies
         shell: bash
         run: |
-          if [ -f "Dependencies/requirements.txt" ]; then
+          if [ -f "requirements.txt" ]; then
             echo "✅ requirements.txt found"
             python -m pip install --upgrade pip
-            python -m pip install -r Dependencies/requirements.txt
+            python -m pip install -r requirements.txt
             pip install papermill
           else
             echo "❌ requirements.txt NOT found"

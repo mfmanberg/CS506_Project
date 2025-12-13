@@ -26,7 +26,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r Dependencies/requirements.txt
           pip install papermill jupyter nbformat
 
       - name: Verify notebook exists
@@ -50,7 +50,7 @@ jobs:
       - name: Extract results
         if: always()
         run: |
-          python extract_results.py || echo "Extraction failed"
+          python Build/extract_results.py || echo "Extraction failed"
 
       - name: Upload executed notebook
         if: always()
@@ -64,4 +64,4 @@ jobs:
 
       - name: Verify execution
         run: |
-          python test_execution.py || echo "Verification completed with warnings"
+          python Build/test_execution.py || echo "Verification completed with warnings"
