@@ -1,36 +1,67 @@
-name: Testing
+name: Linear Regression CI
 
 on:
   push:
+    branches: [ main ]
   pull_request:
+    branches: [ main ]
+  workflow_dispatch:  # Allow manual trigger
 
 jobs:
-  build:
-    runs-on: windows-latest
-
+  test-linear-regression:
+    runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          python-version: '3.13'
+          lfs: true  # Pull LFS files if needed
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
 
       - name: Install dependencies
-        shell: powershell
         run: |
-          if (Test-Path "requirements.txt") {
-            Write-Host "✅ requirements.txt found"
-            python -m pip install --upgrade pip
-            python -m pip install -r requirements.txt
-          } else {
-            Write-Host "❌ requirements.txt NOT found"
-          }
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install papermill jupyter nbformat
 
-      - name: Install Jupyter
-        run: python -m pip install jupyter nbconvert
-
-      - name: Run notebook
+      - name: Verify notebook exists
         run: |
-          jupyter nbconvert --to notebook --execute `
-            3_OUTPUT/3_xg_boost/XGBoost_PostMid_ipynb `
-            --inplace
+          if [ -f "3_OUTPUT/3_linear_regression/linear_regression.ipynb" ]; then
+            echo "✅ Notebook found"
+          else
+            echo "❌ Notebook not found"
+            exit 1
+          fi
+
+      - name: Execute linear_regression.ipynb
+        run: |
+          papermill \
+            3_OUTPUT/3_linear_regression/linear_regression.ipynb \
+            3_OUTPUT/3_linear_regression/linear_regression_output.ipynb \
+            --kernel python3 \
+            --execution-timeout 1800
+        continue-on-error: false
+
+      - name: Extract results
+        if: always()
+        run: |
+          python extract_results.py
+
+      - name: Upload executed notebook
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linear-regression-results
+          path: |
+            3_OUTPUT/3_linear_regression/linear_regression_output.ipynb
+            model_results.log
+          retention-days: 30
+
+      - name: Verify execution
+        run: |
+          python test_execution.py
