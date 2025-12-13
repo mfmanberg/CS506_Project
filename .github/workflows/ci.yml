@@ -1,0 +1,38 @@
+name: Testing
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          if [ -f "requirements.txt" ]; then
+            echo "✅ requirements.txt found"
+            python -m pip install --upgrade pip
+            python -m pip install -r requirements.txt
+          else
+            echo "❌ requirements.txt NOT found"
+          fi
+
+      - name: Install Jupyter
+        run: python -m pip install jupyter nbconvert
+
+      - name: Run notebook
+        run: |
+          jupyter nbconvert --to notebook --execute \
+            3_OUTPUT/3_svr/SVMDaily.ipynb \
+            --inplace
