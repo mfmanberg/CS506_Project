@@ -1,0 +1,50 @@
+name: SVM Daily Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          if [ -f "Dependencies/requirements.txt" ]; then
+            echo "✅ requirements.txt found"
+            python -m pip install --upgrade pip
+            python -m pip install -r Dependencies/requirements.txt
+            pip install papermill
+          else
+            echo "❌ requirements.txt NOT found"
+            exit 1
+          fi
+
+      - name: Run SVMDaily notebook
+        run: |
+          papermill \
+            3_OUTPUT/3_svr/SVMDaily.ipynb \
+            3_OUTPUT/3_svr/SVMDaily.ipynb \
+            --kernel python3 \
+            --execution-timeout 1800
+
+      - name: Upload executed notebook
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: svmdaily-results
+          path: 3_OUTPUT/3_svr/SVMDaily.ipynb
+          retention-days: 30

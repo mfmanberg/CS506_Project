@@ -2,7 +2,7 @@
 
 **Organized Structure with Automated Testing and CI/CD**
 
-## 📁 Project Organization
+## Project Organization
 
 ```
 CS506_Project/
@@ -36,7 +36,7 @@ CS506_Project/
 └── model_results.log      # Execution results
 ```
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### 1. Install Dependencies
 ```bash
@@ -66,17 +66,17 @@ make -f Build/Makefile.wsl
 cat model_results.log
 ```
 
-## 📊 GitHub Actions (CI/CD)
+## GitHub Actions (CI/CD)
 
 All workflows automatically run on push to `main`:
 
-- ✅ **Linear Regression** - 4m 5s
-- ✅ **SVM Daily** - 1m 23s  
-- ✅ **XGBoost Testing** - 1m 34s
+- **Linear Regression** - 4m 5s
+- **SVM Daily** - 1m 23s  
+-  **XGBoost Testing** - 1m 34s
 
 View at: https://github.com/mfmanberg/CS506_Project/actions
 
-## 📖 Documentation
+## Documentation
 
 Each directory has its own README with detailed instructions:
 
@@ -86,8 +86,8 @@ Each directory has its own README with detailed instructions:
 
 ## 🎯 Key Features
 
-✅ **Fully Automated** - One command to run all notebooks  
-✅ **Cross-Platform** - Works on Windows, WSL, Linux, GitHub Actions  
+ **Fully Automated** - One command to run all notebooks  
+ **Cross-Platform** - Works on Windows, WSL, Linux, GitHub Actions  
 ✅ **Reproducible** - All paths are absolute and dynamic  
 ✅ **Well-Documented** - README in every directory  
 ✅ **CI/CD Integrated** - Automated testing on every push  
