@@ -11,14 +11,22 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.absolute()
 MASTER_PARQUET = PROJECT_ROOT / "1_LIB" / "master" / "master.parquet"
 
-# Notebooks to fix
-NOTEBOOKS = [
-    "3_OUTPUT/3_linear_regression/linear_regression.ipynb",
-    "3_OUTPUT/3_svr/SVM_Trunc.ipynb",
-    "3_OUTPUT/3_svr/SVMDaily.ipynb",
-    "3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb",
-    "3_OUTPUT/3_xg_boost/XGBoost_Testing.ipynb",
-]
+def find_all_notebooks():
+    """Find all .ipynb files in the project."""
+    notebooks = []
+    for root, dirs, files in os.walk(PROJECT_ROOT):
+        # Skip venv, .git, and other common non-source directories
+        dirs[:] = [d for d in dirs if d not in ['.git', 'venv', '.venv', '__pycache__', '.ipynb_checkpoints', 'node_modules']]
+        
+        for file in files:
+            if file.endswith('.ipynb'):
+                rel_path = Path(root).relative_to(PROJECT_ROOT) / file
+                notebooks.append(str(rel_path).replace('\\', '/'))
+    
+    return sorted(notebooks)
+
+# Find all notebooks in project
+NOTEBOOKS = find_all_notebooks()
 
 def fix_notebook(notebook_path):
     """Fix paths in a single notebook."""
@@ -49,17 +57,22 @@ def fix_notebook(notebook_path):
         for line in source:
             original_line = line
             
-            # Fix common relative path patterns
+            # Fix common relative path patterns - use forward slashes for cross-platform
+            master_path_str = str(MASTER_PARQUET).replace('\\', '/')
+            
             replacements = [
-                ('Path("1_LIB/master/master.parquet")', f'Path(r"{MASTER_PARQUET}")'),
-                ('Path("../../../1_LIB/master/master.parquet")', f'Path(r"{MASTER_PARQUET}")'),
-                ('Path("../../1_LIB/master/master.parquet")', f'Path(r"{MASTER_PARQUET}")'),
-                ('"1_LIB/master/master.parquet"', f'r"{MASTER_PARQUET}"'),
-                ('"../../../1_LIB/master/master.parquet"', f'r"{MASTER_PARQUET}"'),
-                ('"../../1_LIB/master/master.parquet"', f'r"{MASTER_PARQUET}"'),
-                ("'1_LIB/master/master.parquet'", f'r"{MASTER_PARQUET}"'),
-                ("'../../../1_LIB/master/master.parquet'", f'r"{MASTER_PARQUET}"'),
-                ("'../../1_LIB/master/master.parquet'", f'r"{MASTER_PARQUET}"'),
+                ('Path("1_LIB/master/master.parquet")', f'Path(r"{master_path_str}")'),
+                ('Path("../../../1_LIB/master/master.parquet")', f'Path(r"{master_path_str}")'),
+                ('Path("../../1_LIB/master/master.parquet")', f'Path(r"{master_path_str}")'),
+                ('Path("..\\..\\..\\1_LIB\\master\\master.parquet")', f'Path(r"{master_path_str}")'),
+                ('"1_LIB/master/master.parquet"', f'r"{master_path_str}"'),
+                ('"../../../1_LIB/master/master.parquet"', f'r"{master_path_str}"'),
+                ('"../../1_LIB/master/master.parquet"', f'r"{master_path_str}"'),
+                ('"..\\..\\..\\1_LIB\\master\\master.parquet"', f'r"{master_path_str}"'),
+                ("'1_LIB/master/master.parquet'", f'r"{master_path_str}"'),
+                ("'../../../1_LIB/master/master.parquet'", f'r"{master_path_str}"'),
+                ("'../../1_LIB/master/master.parquet'", f'r"{master_path_str}"'),
+                ("'..\\..\\..\\1_LIB\\master\\master.parquet'", f'r"{master_path_str}"'),
             ]
             
             for old, new in replacements:
@@ -84,7 +97,7 @@ def fix_notebook(notebook_path):
 
 def main():
     print("=" * 70)
-    print("FIXING NOTEBOOK PATHS")
+    print("FIXING NOTEBOOK PATHS - ALL NOTEBOOKS IN PROJECT")
     print("=" * 70)
     print()
     print(f"Project root: {PROJECT_ROOT}")
@@ -96,6 +109,11 @@ def main():
         print("  Notebooks will still be updated but may fail to run.")
         print()
     
+    print(f"Found {len(NOTEBOOKS)} notebooks in project:")
+    for nb in NOTEBOOKS:
+        print(f"  - {nb}")
+    print()
+    
     fixed_count = 0
     for notebook in NOTEBOOKS:
         if fix_notebook(notebook):
@@ -105,11 +123,14 @@ def main():
     print("=" * 70)
     print(f"✓ Processed {len(NOTEBOOKS)} notebooks")
     print(f"✓ Fixed {fixed_count} notebooks")
+    print(f"✓ No changes needed for {len(NOTEBOOKS) - fixed_count} notebooks")
     print("=" * 70)
     print()
     print("Next steps:")
     print("  1. Review the changes: git diff")
     print("  2. Run notebooks: python run_makefile.py run-analysis")
+    print("  3. Commit changes: git add -A && git commit -m 'Fix notebook paths'")
+    print("  4. Push: git push origin main --force")
     print()
 
 if __name__ == "__main__":
