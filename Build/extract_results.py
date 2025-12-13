@@ -139,10 +139,10 @@ def log_results(all_results, log_file):
 
 def main():
     """Extract results from all target notebooks."""
-    # Get the Build folder, then go up to project root
+    # Get the Build folder
     build_folder = Path(__file__).parent.resolve()
     project_root = build_folder.parent  # Go up one level to project root
-    log_file = project_root / 'model_results.log'
+    log_file = build_folder / 'model_results.log'  # Output to Build folder
     
     notebooks = [
         project_root / '3_OUTPUT' / '3_linear_regression' / 'linear_regression.ipynb',

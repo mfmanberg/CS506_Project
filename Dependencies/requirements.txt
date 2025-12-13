@@ -17,8 +17,7 @@
 #    - pip install -r requirements.txt
 #
 # 4. Download Data:
-#    - Follow instructions in MESONET_DOWNLOAD file
-#    - Place data in 1_LIB folder before running notebooks
+#    - Follow instructions in 1st_Pass file if mesonet and NYISO data not present
 #
 # 5. Run Notebooks:
 #    - Local: .\RunNotebooks.ps1 (Windows) or make -f Makefile.wsl (WSL)

@@ -61,6 +61,7 @@ run: check-deps
 	@echo "============================================================"
 	@echo ""
 	@source $(VENV_DIR)/bin/activate && \
+	export PYTHONPATH="$(PROJECT_ROOT):$(PROJECT_ROOT)/Build:$$PYTHONPATH" && \
 	COMPLETED=0 && \
 	FAILED=0 && \
 	TOTAL=7 && \
@@ -82,7 +83,7 @@ run: check-deps
 			FAILED=$$((FAILED + 1)); \
 			continue; \
 		fi; \
-		if $(PAPERMILL) "$$NB" "$$NB" --kernel python3 --execution-timeout 3600 2>&1; then \
+		if $(PAPERMILL) "$$NB" "$$NB" --kernel python3 --execution-timeout 3600 --cwd "$(PROJECT_ROOT)" 2>&1; then \
 			echo "[SUCCESS] $$(basename $$NB)"; \
 			COMPLETED=$$((COMPLETED + 1)); \
 		else \
@@ -101,45 +102,52 @@ run: check-deps
 # Run a specific notebook
 run-linear: check-deps
 	@source $(VENV_DIR)/bin/activate && \
+	export PYTHONPATH="$(PROJECT_ROOT):$(PROJECT_ROOT)/Build:$$PYTHONPATH" && \
 	$(PAPERMILL) $(PROJECT_ROOT)/3_OUTPUT/3_linear_regression/linear_regression.ipynb \
 		$(PROJECT_ROOT)/3_OUTPUT/3_linear_regression/linear_regression.ipynb \
-		--kernel python3 --execution-timeout 3600
+		--kernel python3 --execution-timeout 3600 --cwd "$(PROJECT_ROOT)"
 
 run-svm-trunc: check-deps
 	@source $(VENV_DIR)/bin/activate && \
+	export PYTHONPATH="$(PROJECT_ROOT):$(PROJECT_ROOT)/Build:$$PYTHONPATH" && \
 	$(PAPERMILL) $(PROJECT_ROOT)/3_OUTPUT/3_svr/SVM_Trunc.ipynb \
 		$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVM_Trunc.ipynb \
-		--kernel python3 --execution-timeout 3600
+		--kernel python3 --execution-timeout 3600 --cwd "$(PROJECT_ROOT)"
 
 run-svm-daily: check-deps
 	@source $(VENV_DIR)/bin/activate && \
+	export PYTHONPATH="$(PROJECT_ROOT):$(PROJECT_ROOT)/Build:$$PYTHONPATH" && \
 	$(PAPERMILL) $(PROJECT_ROOT)/3_OUTPUT/3_svr/SVMDaily.ipynb \
 		$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVMDaily.ipynb \
-		--kernel python3 --execution-timeout 3600
+		--kernel python3 --execution-timeout 3600 --cwd "$(PROJECT_ROOT)"
 
 run-svm-nomeso: check-deps
 	@source $(VENV_DIR)/bin/activate && \
+	export PYTHONPATH="$(PROJECT_ROOT):$(PROJECT_ROOT)/Build:$$PYTHONPATH" && \
 	$(PAPERMILL) $(PROJECT_ROOT)/3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb \
 		$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb \
-		--kernel python3 --execution-timeout 3600
+		--kernel python3 --execution-timeout 3600 --cwd "$(PROJECT_ROOT)"
 
 run-comparison: check-deps
 	@source $(VENV_DIR)/bin/activate && \
+	export PYTHONPATH="$(PROJECT_ROOT):$(PROJECT_ROOT)/Build:$$PYTHONPATH" && \
 	$(PAPERMILL) $(PROJECT_ROOT)/3_OUTPUT/3_xg_boost/ComparisonMetrics.ipynb \
 		$(PROJECT_ROOT)/3_OUTPUT/3_xg_boost/ComparisonMetrics.ipynb \
-		--kernel python3 --execution-timeout 3600
+		--kernel python3 --execution-timeout 3600 --cwd "$(PROJECT_ROOT)"
 
 run-xgboost-post: check-deps
 	@source $(VENV_DIR)/bin/activate && \
+	export PYTHONPATH="$(PROJECT_ROOT):$(PROJECT_ROOT)/Build:$$PYTHONPATH" && \
 	$(PAPERMILL) $(PROJECT_ROOT)/3_OUTPUT/3_xg_boost/XGBoost_PostMid.ipynb \
 		$(PROJECT_ROOT)/3_OUTPUT/3_xg_boost/XGBoost_PostMid.ipynb \
-		--kernel python3 --execution-timeout 3600
+		--kernel python3 --execution-timeout 3600 --cwd "$(PROJECT_ROOT)"
 
 run-xgboost-test: check-deps
 	@source $(VENV_DIR)/bin/activate && \
+	export PYTHONPATH="$(PROJECT_ROOT):$(PROJECT_ROOT)/Build:$$PYTHONPATH" && \
 	$(PAPERMILL) $(PROJECT_ROOT)/3_OUTPUT/3_xg_boost/XGBoost_Testing.ipynb \
 		$(PROJECT_ROOT)/3_OUTPUT/3_xg_boost/XGBoost_Testing.ipynb \
-		--kernel python3 --execution-timeout 3600
+		--kernel python3 --execution-timeout 3600 --cwd "$(PROJECT_ROOT)"
 
 # Clean virtual environment
 clean-venv:
