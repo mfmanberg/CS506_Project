@@ -349,32 +349,74 @@ FROM read_parquet('./../../1_LIB/nyiso/nyiso_parquet/**/*.parquet')
 
 ### SVR Model Animations - Interactive Performance Across Time Scales
 
-The SVR models generate interactive animations showing real-time prediction performance across different temporal aggregations. Each animation displays a trailing window comparing predicted vs actual load values.
+The SVR models generate real-time prediction animations showing performance across different temporal aggregations. Each animation displays a trailing window comparing predicted vs actual load values with automatic playback.
 
-**Animation Grid:**
+<div align="center">
 
-| Time Scale | Model | Animation Location | Description |
-|------------|-------|-------------------|-------------|
-| **5-Minute** | SVR (High Resolution) | [SVMMinute.ipynb](3_OUTPUT/3_svr/SVMMinute.ipynb) | Captures minute-by-minute load variations with ~0.28% MAPE |
-| **15-Minute** | SVR (Quarter-Hourly) | [SVM15Min.ipynb](3_OUTPUT/3_svr/SVM15Min.ipynb) | Quarter-hourly aggregation with enhanced stability |
-| **Hourly** | SVR (Hourly) | [SVMHourly.ipynb](3_OUTPUT/3_svr/SVMHourly.ipynb) | Hourly forecasting balancing accuracy and computational efficiency |
-| **Hourly (Truncated)** | SVR (Reduced Dataset) | [SVM_Trunc.ipynb](3_OUTPUT/3_svr/SVM_Trunc.ipynb) | Performance on truncated hourly data |
-| **Daily** | SVR (With Weather) | [SVMDaily.ipynb](3_OUTPUT/3_svr/SVMDaily.ipynb) | Daily aggregation incorporating MesoNet weather features |
-| **Daily** | SVR (Load-Only) | [SVMDailywoutMeso.ipynb](3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb) | Daily forecasting using only load history (baseline) |
+## 🎬 SVR Animation Grid - Click to View in Full Notebooks
+
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <img src="2_FIGURES/FIGURES/svr_animations/svr_5min_animation.gif" width="100%"/>
+      <br/>
+      <b>5-Minute Resolution</b><br/>
+      <sub>MAPE: 0.28% | <a href="3_OUTPUT/3_svr/SVMMinute.ipynb">View Notebook</a></sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="2_FIGURES/FIGURES/svr_animations/svr_15min_animation.gif" width="100%"/>
+      <br/>
+      <b>15-Minute Resolution</b><br/>
+      <sub>MAPE: ~0.35% | <a href="3_OUTPUT/3_svr/SVM15Min.ipynb">View Notebook</a></sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="2_FIGURES/FIGURES/svr_animations/svr_hourly_animation.gif" width="100%"/>
+      <br/>
+      <b>Hourly Resolution</b><br/>
+      <sub>MAPE: 0.28% | <a href="3_OUTPUT/3_svr/SVMHourly.ipynb">View Notebook</a></sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="33%">
+      <img src="2_FIGURES/FIGURES/svr_animations/svr_hourly_trunc_animation.gif" width="100%"/>
+      <br/>
+      <b>Hourly (Truncated Dataset)</b><br/>
+      <sub>Reduced Training Set | <a href="3_OUTPUT/3_svr/SVM_Trunc.ipynb">View Notebook</a></sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="2_FIGURES/FIGURES/svr_animations/svr_daily_weather_animation.gif" width="100%"/>
+      <br/>
+      <b>Daily + Weather Features</b><br/>
+      <sub>MAPE: ~3.5% | <a href="3_OUTPUT/3_svr/SVMDaily.ipynb">View Notebook</a></sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="2_FIGURES/FIGURES/svr_animations/svr_daily_loadonly_animation.gif" width="100%"/>
+      <br/>
+      <b>Daily Load-Only Baseline</b><br/>
+      <sub>MAPE: ~5.2% | <a href="3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb">View Notebook</a></sub>
+    </td>
+  </tr>
+</table>
+
+**Animation Legend:**  
+🔵 **Blue Line** = True Load Values | 🔴 **Red Line** = SVR Predictions
+
+</div>
 
 **Animation Features:**
-- **Trailing Window Display**: Shows most recent 100 data points for clarity
+- **Trailing Window Display**: Shows most recent data points for clarity (100 points for fine scales, 30+ for daily)
 - **Dual-Line Comparison**: Blue line (true values) vs. Red line (predictions)
-- **Interactive Controls**: Play, pause, speed adjustment, and frame navigation
-- **Real-Time Updates**: Demonstrates model responsiveness to load changes
+- **Auto-Loop Playback**: Continuous animation showing model tracking behavior
+- **Real-Time Performance**: Visualizes model responsiveness to load changes
 
 **Key Observations from Animations:**
-1. **Fine-Scale (5-min, 15-min)**: Animations reveal excellent tracking of sub-hourly fluctuations but occasional lag during rapid load changes
-2. **Hourly**: Optimal balance between prediction accuracy and visual smoothness
-3. **Daily**: Weather-integrated model shows superior performance during extreme events compared to load-only baseline
-4. **Volatility Handling**: Animations clearly illustrate the "large jump confusion" mentioned earlier, particularly visible in hourly and daily scales
+1. **Fine-Scale (5-min, 15-min)**: Excellent tracking of sub-hourly fluctuations with tight prediction alignment
+2. **Hourly**: Optimal balance between prediction accuracy and visual smoothness - minimal lag
+3. **Daily with Weather**: Weather features significantly improve tracking during extreme load events (compare with load-only baseline)
+4. **Daily Load-Only**: Baseline model shows larger prediction errors, especially during weather-driven volatility
+5. **Truncated Dataset**: Demonstrates how reduced training data affects model stability
 
-*To view animations: Open the respective notebook files and execute cells. Animations are rendered using matplotlib's FuncAnimation with jshtml embedding.*
+*Interactive notebook versions with full controls available via the "View Notebook" links above.*
 
 ---
 <br>
@@ -701,15 +743,37 @@ XGBoost outperforms both linear regression and SVR for energy load forecasting b
 
 ### SVR: Comparative Analysis Across Time Scales
 
-Interactive animations available in respective notebook files show real-time prediction tracking:
+<div align="center">
 
-| Model Variant | MAPE | Training Time | Animation Preview |
-|---------------|------|---------------|-------------------|
-| 5-Minute SVR | 0.28% | ~5 hours | [View Animation](3_OUTPUT/3_svr/SVMMinute.ipynb) |
-| 15-Minute SVR | ~0.35% | ~4 hours | [View Animation](3_OUTPUT/3_svr/SVM15Min.ipynb) |
-| Hourly SVR | ~0.28% | ~5 hours | [View Animation](3_OUTPUT/3_svr/SVMHourly.ipynb) |
-| Daily SVR (Weather) | ~3.5% | ~2 hours | [View Animation](3_OUTPUT/3_svr/SVMDaily.ipynb) |
-| Daily SVR (Load-Only) | ~5.2% | ~1.5 hours | [View Animation](3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb) |
+**Interactive Animation Grid - Live Model Performance Tracking**
+
+<table>
+  <tr>
+    <td align="center"><img src="2_FIGURES/FIGURES/svr_animations/svr_5min_animation.gif" width="250"/><br/><b>5-Min</b><br/><sub>MAPE: 0.28%</sub></td>
+    <td align="center"><img src="2_FIGURES/FIGURES/svr_animations/svr_15min_animation.gif" width="250"/><br/><b>15-Min</b><br/><sub>MAPE: ~0.35%</sub></td>
+    <td align="center"><img src="2_FIGURES/FIGURES/svr_animations/svr_hourly_animation.gif" width="250"/><br/><b>Hourly</b><br/><sub>MAPE: 0.28%</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="2_FIGURES/FIGURES/svr_animations/svr_hourly_trunc_animation.gif" width="250"/><br/><b>Hourly (Trunc)</b><br/><sub>Reduced Set</sub></td>
+    <td align="center"><img src="2_FIGURES/FIGURES/svr_animations/svr_daily_weather_animation.gif" width="250"/><br/><b>Daily + Weather</b><br/><sub>MAPE: ~3.5%</sub></td>
+    <td align="center"><img src="2_FIGURES/FIGURES/svr_animations/svr_daily_loadonly_animation.gif" width="250"/><br/><b>Daily Load-Only</b><br/><sub>MAPE: ~5.2%</sub></td>
+  </tr>
+</table>
+
+🔵 True Load | 🔴 Predictions
+
+</div>
+
+**Performance Summary by Time Scale:**
+
+| Model Variant | MAPE | Training Time | Full Interactive Notebook |
+|---------------|------|---------------|---------------------------|
+| 5-Minute SVR | 0.28% | ~5 hours | [SVMMinute.ipynb](3_OUTPUT/3_svr/SVMMinute.ipynb) |
+| 15-Minute SVR | ~0.35% | ~4 hours | [SVM15Min.ipynb](3_OUTPUT/3_svr/SVM15Min.ipynb) |
+| Hourly SVR | ~0.28% | ~5 hours | [SVMHourly.ipynb](3_OUTPUT/3_svr/SVMHourly.ipynb) |
+| Hourly SVR (Truncated) | N/A | ~2 hours | [SVM_Trunc.ipynb](3_OUTPUT/3_svr/SVM_Trunc.ipynb) |
+| Daily SVR (Weather) | ~3.5% | ~2 hours | [SVMDaily.ipynb](3_OUTPUT/3_svr/SVMDaily.ipynb) |
+| Daily SVR (Load-Only) | ~5.2% | ~1.5 hours | [SVMDailywoutMeso.ipynb](3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb) |
 
 ### Historical Load Patterns
 
