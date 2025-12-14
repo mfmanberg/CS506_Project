@@ -284,16 +284,24 @@ Two regression approaches were compared across multiple time scales:
 - **Features Used**: 5 (highly efficient feature set)
 - **Best performance** with fewest features
 
-================================================================================================================IMPROVEMENT SUMMARY
-===============================================================================================================
+IMPROVEMENT SUMMARY:
+
+
 Average R² Improvement:    0.2712
+
+
 Average RMSE Improvement:  43935.946
+
+
 Average MAPE Improvement:  48.271%
 
-Best R² Improvement:       1day (0.3133)
-Best RMSE Improvement:     1day (184361.916)
-Best MAPE Improvement:     1day (51.135%)
-================================================================================================================
+Best R² Improvement:       1 day (0.3133)
+
+
+Best RMSE Improvement:     1 day (184361.916)
+
+
+Best MAPE Improvement:     1 day (51.135%)
 
 ### Key Findings
 
@@ -321,16 +329,86 @@ The multivariate stepwise regression analysis reveals critical insights about en
 
 
 PERCENTAGE IMPROVEMENT
-========================================================================================================================
-5min     - R²:   802.7% | RMSE:   78.9% | MAPE:   83.7% | Features: 23
-15min    - R²:   739.4% | RMSE:   78.1% | MAPE:   83.1% | Features: 23
-30min    - R²:   730.9% | RMSE:   78.1% | MAPE:   82.9% | Features: 21
-1hour    - R²:   710.1% | RMSE:   77.8% | MAPE:   82.2% | Features: 20
-3hour    - R²:   717.3% | RMSE:   78.3% | MAPE:   83.4% | Features: 22
-6hour    - R²:   734.7% | RMSE:   79.3% | MAPE:   84.5% | Features: 18
-12hour   - R²:   881.3% | RMSE:   81.5% | MAPE:   87.4% | Features: 10
-1day     - R²:   875.5% | RMSE:   84.8% | MAPE:   89.6% | Features:  5
-================================================================================================================
+5min:   
+
+- R²:   802.7%
+  
+- RMSE:   78.9%
+
+- MAPE:   83.7%
+  
+- Features: 23
+  
+15min
+
+- R²:   739.4%
+
+- RMSE:   78.1%
+  
+- MAPE:   83.1%
+  
+- Features: 23
+  
+30min
+
+- R²:   730.9%
+  
+- RMSE:   78.1%
+  
+- MAPE:   82.9%
+  
+- Features: 21
+  
+1hour
+
+- R²:   710.1%
+  
+- RMSE:   77.8%
+  
+- MAPE:   82.2%
+  
+- Features: 20
+  
+3hour
+
+- R²:   717.3%
+  
+- RMSE:   78.3%
+  
+- MAPE:   83.4%
+  
+- Features: 22
+
+6 hour
+
+- R²:   734.7%
+  
+- RMSE:   79.3%
+  
+- MAPE:   84.5%
+  
+- Features: 18
+  
+12 hour
+
+- R²:   881.3%
+  
+- RMSE:   81.5%
+  
+- MAPE:   87.4%
+  
+- Features: 10
+ 
+1 day
+
+- R²:   875.5%
+  
+- RMSE:   84.8%
+  
+- MAPE:   89.6%
+  
+- Features:  5
+
 
 ### Key Findings
 
@@ -807,7 +885,9 @@ XGBoost's rapid training time (210 seconds for all aggregation levels) enables:
 Considering best nmultivariate models on the subsample of 2020 - 2025 representatviely, Daily MAPE (2020-2025):
 
 Linear Regression: 11.42%
+
 XGBoost: 0.33%
+
 SVR: 11.02%
 
 XGBoost outperforms both linear regression and SVR for energy load forecasting because it fundamentally aligns with the chaotic, non-linear, and event-driven nature of electricity consumption. Its tree-based architecture naturally accommodates business events—sudden load spikes, outages, and regime changes—that confound smooth kernel-based methods like SVR and completely defeat linear assumptions. The fusion with MesoNet weather data amplifies this advantage by providing environmental context that helps the model distinguish between regular fluctuations and genuine business events. With sub-1% MAPE at fine time scales and near-instantaneous training, XGBoost represents a practical, deployable solution for NYISO's forecasting challenges.
