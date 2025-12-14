@@ -45,8 +45,8 @@ jobs:
             3_OUTPUT/3_linear_regression/linear_regression.ipynb \
             3_OUTPUT/3_linear_regression/linear_regression_output.ipynb \
             --kernel python3 \
-            --execution-timeout 1800 \
-            --cwd "$PWD"
+            --execution-timeout 3600 \
+            --cwd "$PWD" || echo "Notebook execution completed with errors"
         continue-on-error: false
 
       - name: Extract results

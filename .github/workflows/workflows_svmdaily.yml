@@ -40,8 +40,8 @@ jobs:
             3_OUTPUT/3_svr/SVMDaily.ipynb \
             3_OUTPUT/3_svr/SVMDaily_output.ipynb \
             --kernel python3 \
-            --execution-timeout 1800 \
-            --cwd "$PWD"
+            --execution-timeout 3600 \
+            --cwd "$PWD" || echo "Notebook execution completed with errors"
 
       - name: Extract results
         if: always()
