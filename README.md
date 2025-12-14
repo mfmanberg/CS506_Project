@@ -4,7 +4,7 @@
 
 https://youtu.be/KYrckP1kqOI
 
-NOTE: Please see Build_README.md, Requirements.txt and Workflow_README.md in their respective folders. 
+NOTE: Please see Build_README.md, Requirements.txt, and Workflow_README.md in their respective folders. 
 
 **Description of the project**
 
@@ -235,21 +235,17 @@ Two regression approaches were compared across multiple time scales:
 #### 5-Minute Aggregation
 - **Univariate**: R² = -0.0341, RMSE = 204.6, MAPE = 57.4%
 - **Multivariate**: R² = 0.2433, RMSE = 161.5, MAPE = 9.3%
-- **Improvement**:  -21.1% RMSE, -48.1% MAPE
 - **Features Used**: 23 (soil_temp, soil_moisture, dewpoint, precip, wind, snow_depth, solar, pressure, humidity, temperature)
 
 #### 15-Minute Aggregation
 - **Univariate**: R² = -0.0316, RMSE = 677.9, MAPE = 57.3%
 - **Multivariate**: R² = 0.2209, RMSE = 588.0, MAPE = 9.5%
-- **Improvement**: -13.3% RMSE, -47.8% MAPE
 - **Features Used**: 23
 
 #### 1-Hour Aggregation
 - **Univariate**: R² = -0.0329, RMSE = 2641.0, MAPE = 56.9%
 - **Multivariate**: R² = 0.2120, RMSE = 2036.4, MAPE = 10.2%
-
-- 
-- **Features Used**: 20
+ - **Features Used**: 20
 
 ### Key Findings
 
