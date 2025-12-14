@@ -76,7 +76,7 @@ These visualizations were created during initial data exploration to understand 
 
 
 ![Day by Day January 2023](2_FIGURES/FIGURES/day_by_day_jan_2023.png)
-*Daily Load Patterns - January 2023 - Demonstrates consistent diurnal cycles with weather-driven variations* - WEATHHER BE A GOOD FEATURE!!
+*Daily Load Patterns - January 2023 - Demonstrates consistent diurnal cycles with weather-driven variations* - WEATHER COULD BE A GOOD FEATURE!!
 
 ![Top 10 Zones by Average Load](2_FIGURES/FIGURES/2023_top10_names_avg_load.png)
 *Top 10 NYISO Zones by Average Load in 2023 - Geographic distribution of electricity demand*
@@ -222,9 +222,10 @@ Two regression approaches were compared across multiple time scales:
 
 ### Data Processing
 
-- **Training Data**: 2001-2023
+- **Training Data**: 2001-20021
+- **Validation Data**: 2022
 - **Testing Data**: 2023-2024
-- **Aggregation Levels**: 5min, 15min, 30min, 1hour, 3hour, 6hour, 12hour, daily
+- **Aggregation Levels**: 15 min, Hourly, Daily
 - **Data Source**: NYISO load data fused with MesoNet weather station data
 
 ### Results Comparison: Univariate vs Multivariate
