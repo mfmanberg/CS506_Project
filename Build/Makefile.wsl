@@ -66,19 +66,18 @@ run: check-deps
 	export PYTHONPATH="$(PROJECT_ROOT):$(PROJECT_ROOT)/Build:$$PYTHONPATH" && \
 	COMPLETED=0 && \
 	FAILED=0 && \
-	TOTAL=9 && \
+	TOTAL=8 && \
 	mkdir -p /tmp/papermill_output && \
-	for i in 1 2 3 4 5 6 7 8 9; do \
+	for i in 1 2 3 4 5 6 7 8; do \
 		case $$i in \
-			1) NB="$(PROJECT_ROOT)/2_FIGURES/2_data_exploration/nyiso_data_exploration.ipynb";; \
-			2) NB="$(PROJECT_ROOT)/3_OUTPUT/3_linear_regression/linear_regression.ipynb";; \
-			3) NB="$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVM_Trunc.ipynb";; \
-			4) NB="$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVMDaily.ipynb";; \
-			5) NB="$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb";; \
-			6) NB="$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVMHourly.ipynb";; \
-			7) NB="$(PROJECT_ROOT)/3_OUTPUT/3_xg_boost/ComparisonMetrics.ipynb";; \
-			8) NB="$(PROJECT_ROOT)/3_OUTPUT/3_xg_boost/XGBoost_PostMid.ipynb";; \
-			9) NB="$(PROJECT_ROOT)/3_OUTPUT/3_xg_boost/XGBoost_Testing.ipynb";; \
+			1) NB="$(PROJECT_ROOT)/3_OUTPUT/3_linear_regression/linear_regression.ipynb";; \
+			2) NB="$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVM_Trunc.ipynb";; \
+			3) NB="$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVMDaily.ipynb";; \
+			4) NB="$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb";; \
+			5) NB="$(PROJECT_ROOT)/3_OUTPUT/3_svr/SVMHourly.ipynb";; \
+			6) NB="$(PROJECT_ROOT)/3_OUTPUT/3_xg_boost/ComparisonMetrics.ipynb";; \
+			7) NB="$(PROJECT_ROOT)/3_OUTPUT/3_xg_boost/XGBoost_PostMid.ipynb";; \
+			8) NB="$(PROJECT_ROOT)/3_OUTPUT/3_xg_boost/XGBoost_Testing.ipynb";; \
 		esac; \
 		echo ""; \
 		echo "[$$i/$$TOTAL] Executing: $$(basename $$NB)"; \

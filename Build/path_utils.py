@@ -11,27 +11,44 @@ def get_project_root():
     """
     Get the project root directory, works in both Windows and WSL.
     Returns absolute path in the format appropriate for the current environment.
+    
+    Search order:
+    1. Environment variable PROJECT_ROOT if set
+    2. Walk up from __file__ location (for imported modules)
+    3. Walk up from current working directory
+    4. Check if cwd IS the project root
     """
+    # First check environment variable
+    if 'PROJECT_ROOT' in os.environ:
+        env_root = Path(os.environ['PROJECT_ROOT'])
+        if env_root.exists() and (env_root / '1_LIB').exists():
+            return env_root.absolute()
+    
     # Try to get the current file's directory
     if '__file__' in globals():
         current = Path(__file__).parent.absolute()
-        # If we're in the Build subdirectory, go up one level
-        if current.name == "Build" or current.name == "Makefile":
-            return current.parent
-        return current
+        # Walk up from Build directory to find project root
+        while current != current.parent:
+            if (current / '1_LIB').exists() and (current / 'Dependencies').exists():
+                return current
+            current = current.parent
     
     # Fallback: use current working directory
-    cwd = Path.cwd()
+    cwd = Path.cwd().absolute()
     
-    # If we're in a subdirectory, try to find project root
-    # (look for characteristic files/folders)
+    # Check if cwd itself is the project root (common with papermill --cwd)
+    if (cwd / '1_LIB').exists() and (cwd / 'Dependencies').exists():
+        return cwd
+    
+    # If not, walk up from cwd to find project root
     current = cwd
     while current != current.parent:
-        if (current / 'Dependencies').exists() or (current / '1_LIB').exists():
+        if (current / '1_LIB').exists() and (current / 'Dependencies').exists():
             return current
         current = current.parent
     
-    # If not found, return cwd
+    # Last resort: return cwd with a warning
+    print(f"WARNING: Could not find project root with 1_LIB folder. Using: {cwd}")
     return cwd
 
 
@@ -77,12 +94,16 @@ def get_master_parquet_path():
     """Get the path to master.parquet file."""
     root = get_project_root()
     master_path = root / '1_LIB' / 'master' / 'master.parquet'
+    if not master_path.exists():
+        print(f"WARNING: master.parquet not found at {master_path}")
     return master_path
 
 def get_master_total_parquet_path():
-    """Get the path to master.parquet file."""
+    """Get the path to master_totalload.parquet file."""
     root = get_project_root()
     master_path = root / '1_LIB' / 'master' / 'master_totalload.parquet'
+    if not master_path.exists():
+        print(f"WARNING: master_totalload.parquet not found at {master_path}")
     return master_path
 
 def get_data_path(*subdirs):

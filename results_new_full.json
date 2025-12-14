@@ -1,0 +1,472 @@
+{
+    "summary": {
+        "five": {
+            "MAPE": 0.2608187548398948,
+            "MAE": 4.069394718071512,
+            "RMSE": 5.796668127186936,
+            "R2": 0.9995735297330635,
+            "Time_s": 3.755556106567383
+        },
+        "quarter": {
+            "MAPE": 0.32535073473750487,
+            "MAE": 5.0962492454161366,
+            "RMSE": 7.175700539132503,
+            "R2": 0.9993462928931716,
+            "Time_s": 2.6821911334991455
+        },
+        "hourly": {
+            "MAPE": 1.6154088651989689,
+            "MAE": 24.634511125021447,
+            "RMSE": 32.33455217900843,
+            "R2": 0.9866700623840053,
+            "Time_s": 1.3915998935699463
+        },
+        "daily": {
+            "MAPE": 3.0907419701331555,
+            "MAE": 47.94822290264723,
+            "RMSE": 64.17909521712737,
+            "R2": 0.9173000026890341,
+            "Time_s": 0.33214426040649414
+        }
+    },
+    "best_configs": {
+        "five": {
+            "MAPE_val": 0.24783343658949347,
+            "MAE_val": 3.929187355637515,
+            "RMSE_val": 5.2659316949391854,
+            "R2_val": 0.9996667932668393,
+            "MAPE": 0.2608187548398948,
+            "MAE": 4.069394718071512,
+            "RMSE": 5.796668127186936,
+            "R2": 0.9995735297330635,
+            "Time_s": 3.755556106567383,
+            "lags": [
+                1,
+                5,
+                15,
+                60
+            ],
+            "params": {
+                "n_estimators": 300,
+                "learning_rate": 0.05,
+                "max_depth": 6,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "tree_method": "hist",
+                "early_stopping_rounds": 20,
+                "random_state": 42
+            }
+        },
+        "quarter": {
+            "MAPE_val": 0.29123368877851635,
+            "MAE_val": 4.668112821054835,
+            "RMSE_val": 6.339966115286577,
+            "R2_val": 0.9995167014044369,
+            "MAPE": 0.32535073473750487,
+            "MAE": 5.0962492454161366,
+            "RMSE": 7.175700539132503,
+            "R2": 0.9993462928931716,
+            "Time_s": 2.6821911334991455,
+            "lags": [
+                1,
+                3,
+                7,
+                30
+            ],
+            "params": {
+                "n_estimators": 300,
+                "learning_rate": 0.05,
+                "max_depth": 6,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "tree_method": "hist",
+                "early_stopping_rounds": 20,
+                "random_state": 42
+            }
+        },
+        "hourly": {
+            "MAPE_val": 1.4405054241942958,
+            "MAE_val": 22.315539991411708,
+            "RMSE_val": 29.047562545807875,
+            "R2_val": 0.9898228480832845,
+            "MAPE": 1.6154088651989689,
+            "MAE": 24.634511125021447,
+            "RMSE": 32.33455217900843,
+            "R2": 0.9866700623840053,
+            "Time_s": 1.3915998935699463,
+            "lags": [
+                1,
+                24,
+                168,
+                336
+            ],
+            "params": {
+                "n_estimators": 300,
+                "learning_rate": 0.05,
+                "max_depth": 6,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "tree_method": "hist",
+                "early_stopping_rounds": 20,
+                "random_state": 42
+            }
+        },
+        "daily": {
+            "MAPE_val": 2.90636067870068,
+            "MAE_val": 45.982788727739205,
+            "RMSE_val": 63.27141386026886,
+            "R2_val": 0.921675985593623,
+            "MAPE": 3.0907419701331555,
+            "MAE": 47.94822290264723,
+            "RMSE": 64.17909521712737,
+            "R2": 0.9173000026890341,
+            "Time_s": 0.33214426040649414,
+            "lags": [
+                1,
+                7,
+                30,
+                90
+            ],
+            "params": {
+                "n_estimators": 300,
+                "learning_rate": 0.05,
+                "max_depth": 6,
+                "subsample": 0.8,
+                "colsample_bytree": 0.8,
+                "tree_method": "hist",
+                "early_stopping_rounds": 20,
+                "random_state": 42
+            }
+        }
+    },
+    "all_configs": {
+        "five": [
+            {
+                "MAPE_val": 0.24985994856174445,
+                "MAE_val": 3.9672707725718968,
+                "RMSE_val": 5.319535960902241,
+                "R2_val": 0.9996599750198645,
+                "MAPE": 0.2603896828652072,
+                "MAE": 4.057270424530126,
+                "RMSE": 5.696607668609117,
+                "R2": 0.9995881245945318,
+                "Time_s": 3.8634467124938965,
+                "lags": [
+                    1,
+                    5,
+                    15
+                ],
+                "params": {
+                    "n_estimators": 300,
+                    "learning_rate": 0.05,
+                    "max_depth": 6,
+                    "subsample": 0.8,
+                    "colsample_bytree": 0.8,
+                    "tree_method": "hist",
+                    "early_stopping_rounds": 20,
+                    "random_state": 42
+                }
+            },
+            {
+                "MAPE_val": 0.24783343658949347,
+                "MAE_val": 3.929187355637515,
+                "RMSE_val": 5.2659316949391854,
+                "R2_val": 0.9996667932668393,
+                "MAPE": 0.2608187548398948,
+                "MAE": 4.069394718071512,
+                "RMSE": 5.796668127186936,
+                "R2": 0.9995735297330635,
+                "Time_s": 3.755556106567383,
+                "lags": [
+                    1,
+                    5,
+                    15,
+                    60
+                ],
+                "params": {
+                    "n_estimators": 300,
+                    "learning_rate": 0.05,
+                    "max_depth": 6,
+                    "subsample": 0.8,
+                    "colsample_bytree": 0.8,
+                    "tree_method": "hist",
+                    "early_stopping_rounds": 20,
+                    "random_state": 42
+                }
+            },
+            {
+                "MAPE_val": 0.25680166559081624,
+                "MAE_val": 4.07936196262824,
+                "RMSE_val": 5.476961790326548,
+                "R2_val": 0.9996395518939732,
+                "MAPE": 0.27171754806310877,
+                "MAE": 4.225620345786057,
+                "RMSE": 5.897228644419311,
+                "R2": 0.9995586046035028,
+                "Time_s": 5.57889723777771,
+                "lags": [
+                    1,
+                    12,
+                    36,
+                    72
+                ],
+                "params": {
+                    "n_estimators": 300,
+                    "learning_rate": 0.05,
+                    "max_depth": 6,
+                    "subsample": 0.8,
+                    "colsample_bytree": 0.8,
+                    "tree_method": "hist",
+                    "early_stopping_rounds": 20,
+                    "random_state": 42
+                }
+            }
+        ],
+        "quarter": [
+            {
+                "MAPE_val": 0.32029817761345025,
+                "MAE_val": 5.128637427229941,
+                "RMSE_val": 6.908375065307211,
+                "R2_val": 0.999426202172149,
+                "MAPE": 0.363912722883296,
+                "MAE": 5.712928722387869,
+                "RMSE": 7.905990322241984,
+                "R2": 0.9992064957182973,
+                "Time_s": 3.0378024578094482,
+                "lags": [
+                    1,
+                    7,
+                    30
+                ],
+                "params": {
+                    "n_estimators": 300,
+                    "learning_rate": 0.05,
+                    "max_depth": 6,
+                    "subsample": 0.8,
+                    "colsample_bytree": 0.8,
+                    "tree_method": "hist",
+                    "early_stopping_rounds": 20,
+                    "random_state": 42
+                }
+            },
+            {
+                "MAPE_val": 0.29123368877851635,
+                "MAE_val": 4.668112821054835,
+                "RMSE_val": 6.339966115286577,
+                "R2_val": 0.9995167014044369,
+                "MAPE": 0.32535073473750487,
+                "MAE": 5.0962492454161366,
+                "RMSE": 7.175700539132503,
+                "R2": 0.9993462928931716,
+                "Time_s": 2.6821911334991455,
+                "lags": [
+                    1,
+                    3,
+                    7,
+                    30
+                ],
+                "params": {
+                    "n_estimators": 300,
+                    "learning_rate": 0.05,
+                    "max_depth": 6,
+                    "subsample": 0.8,
+                    "colsample_bytree": 0.8,
+                    "tree_method": "hist",
+                    "early_stopping_rounds": 20,
+                    "random_state": 42
+                }
+            },
+            {
+                "MAPE_val": 0.30155706799095466,
+                "MAE_val": 4.82704916353838,
+                "RMSE_val": 6.540969537971659,
+                "R2_val": 0.9994855857996396,
+                "MAPE": 0.33673144859342585,
+                "MAE": 5.2581244673931575,
+                "RMSE": 7.295684772774455,
+                "R2": 0.9993240535076314,
+                "Time_s": 2.545711040496826,
+                "lags": [
+                    1,
+                    7,
+                    30,
+                    90
+                ],
+                "params": {
+                    "n_estimators": 300,
+                    "learning_rate": 0.05,
+                    "max_depth": 6,
+                    "subsample": 0.8,
+                    "colsample_bytree": 0.8,
+                    "tree_method": "hist",
+                    "early_stopping_rounds": 20,
+                    "random_state": 42
+                }
+            }
+        ],
+        "hourly": [
+            {
+                "MAPE_val": 1.461629773208722,
+                "MAE_val": 22.619423463140436,
+                "RMSE_val": 29.50168515837221,
+                "R2_val": 0.9895017306355347,
+                "MAPE": 1.6375322915769466,
+                "MAE": 24.943322306749664,
+                "RMSE": 32.81633183299197,
+                "R2": 0.9862862981679954,
+                "Time_s": 2.7515459060668945,
+                "lags": [
+                    1,
+                    24,
+                    168
+                ],
+                "params": {
+                    "n_estimators": 300,
+                    "learning_rate": 0.05,
+                    "max_depth": 6,
+                    "subsample": 0.8,
+                    "colsample_bytree": 0.8,
+                    "tree_method": "hist",
+                    "early_stopping_rounds": 20,
+                    "random_state": 42
+                }
+            },
+            {
+                "MAPE_val": 1.4582708990142996,
+                "MAE_val": 22.580039932364688,
+                "RMSE_val": 29.540653188211632,
+                "R2_val": 0.9894733290266887,
+                "MAPE": 1.6392749716070218,
+                "MAE": 24.95311074609849,
+                "RMSE": 32.80886685231634,
+                "R2": 0.9862837959560313,
+                "Time_s": 1.460404872894287,
+                "lags": [
+                    1,
+                    24,
+                    72,
+                    168
+                ],
+                "params": {
+                    "n_estimators": 300,
+                    "learning_rate": 0.05,
+                    "max_depth": 6,
+                    "subsample": 0.8,
+                    "colsample_bytree": 0.8,
+                    "tree_method": "hist",
+                    "early_stopping_rounds": 20,
+                    "random_state": 42
+                }
+            },
+            {
+                "MAPE_val": 1.4405054241942958,
+                "MAE_val": 22.315539991411708,
+                "RMSE_val": 29.047562545807875,
+                "R2_val": 0.9898228480832845,
+                "MAPE": 1.6154088651989689,
+                "MAE": 24.634511125021447,
+                "RMSE": 32.33455217900843,
+                "R2": 0.9866700623840053,
+                "Time_s": 1.3915998935699463,
+                "lags": [
+                    1,
+                    24,
+                    168,
+                    336
+                ],
+                "params": {
+                    "n_estimators": 300,
+                    "learning_rate": 0.05,
+                    "max_depth": 6,
+                    "subsample": 0.8,
+                    "colsample_bytree": 0.8,
+                    "tree_method": "hist",
+                    "early_stopping_rounds": 20,
+                    "random_state": 42
+                }
+            }
+        ],
+        "daily": [
+            {
+                "MAPE_val": 3.124810370903083,
+                "MAE_val": 49.69277465847707,
+                "RMSE_val": 66.14516046327635,
+                "R2_val": 0.914399557687971,
+                "MAPE": 3.2652435999735907,
+                "MAE": 50.57077877321464,
+                "RMSE": 67.87277690466492,
+                "R2": 0.9075068541014255,
+                "Time_s": 0.2718071937561035,
+                "lags": [
+                    1,
+                    7,
+                    30
+                ],
+                "params": {
+                    "n_estimators": 300,
+                    "learning_rate": 0.05,
+                    "max_depth": 6,
+                    "subsample": 0.8,
+                    "colsample_bytree": 0.8,
+                    "tree_method": "hist",
+                    "early_stopping_rounds": 20,
+                    "random_state": 42
+                }
+            },
+            {
+                "MAPE_val": 3.100228116901001,
+                "MAE_val": 49.151218097685074,
+                "RMSE_val": 65.88504056975216,
+                "R2_val": 0.9150714918351371,
+                "MAPE": 3.254638542871789,
+                "MAE": 50.328928989356946,
+                "RMSE": 66.88576951581945,
+                "R2": 0.9101773691934123,
+                "Time_s": 0.25070977210998535,
+                "lags": [
+                    1,
+                    3,
+                    7,
+                    30
+                ],
+                "params": {
+                    "n_estimators": 300,
+                    "learning_rate": 0.05,
+                    "max_depth": 6,
+                    "subsample": 0.8,
+                    "colsample_bytree": 0.8,
+                    "tree_method": "hist",
+                    "early_stopping_rounds": 20,
+                    "random_state": 42
+                }
+            },
+            {
+                "MAPE_val": 2.90636067870068,
+                "MAE_val": 45.982788727739205,
+                "RMSE_val": 63.27141386026886,
+                "R2_val": 0.921675985593623,
+                "MAPE": 3.0907419701331555,
+                "MAE": 47.94822290264723,
+                "RMSE": 64.17909521712737,
+                "R2": 0.9173000026890341,
+                "Time_s": 0.33214426040649414,
+                "lags": [
+                    1,
+                    7,
+                    30,
+                    90
+                ],
+                "params": {
+                    "n_estimators": 300,
+                    "learning_rate": 0.05,
+                    "max_depth": 6,
+                    "subsample": 0.8,
+                    "colsample_bytree": 0.8,
+                    "tree_method": "hist",
+                    "early_stopping_rounds": 20,
+                    "random_state": 42
+                }
+            }
+        ]
+    }
+}

@@ -1,0 +1,73 @@
+# Simplified Makefile for CS506 Project
+# Runs notebooks sequentially with better error handling
+
+SHELL := /bin/bash
+MAKEFILE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+PROJECT_ROOT := $(abspath $(MAKEFILE_DIR)/..)
+PYTHON := $(PROJECT_ROOT)/.venv_wsl/bin/python
+PAPERMILL := $(PROJECT_ROOT)/.venv_wsl/bin/papermill
+VENV_DIR := $(PROJECT_ROOT)/.venv_wsl
+
+# Notebook list
+NOTEBOOKS := \
+	3_OUTPUT/3_linear_regression/linear_regression.ipynb \
+	3_OUTPUT/3_svr/SVM_Trunc.ipynb \
+	3_OUTPUT/3_svr/SVMDaily.ipynb \
+	3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb \
+	3_OUTPUT/3_svr/SVMHourly.ipynb \
+	3_OUTPUT/3_xg_boost/ComparisonMetrics.ipynb \
+	3_OUTPUT/3_xg_boost/XGBoost_PostMid.ipynb \
+	3_OUTPUT/3_xg_boost/XGBoost_Testing.ipynb
+
+.PHONY: all run clean
+
+all: run
+
+run:
+	@echo "============================================================"
+	@echo "Starting Notebook Execution"
+	@echo "============================================================"
+	@cd $(PROJECT_ROOT) && \
+	source $(VENV_DIR)/bin/activate && \
+	export PYTHONPATH="$(PROJECT_ROOT):$(PROJECT_ROOT)/Build" && \
+	COMPLETED=0 && \
+	FAILED=0 && \
+	TOTAL=8 && \
+	echo "" && \
+	for nb in $(NOTEBOOKS); do \
+		COUNT=$$((COMPLETED + FAILED + 1)); \
+		echo "" && \
+		echo "[$$COUNT/$$TOTAL] $$nb" && \
+		echo "----------------------------------------" && \
+		if [ ! -f "$$nb" ]; then \
+			echo "SKIP: File not found" && \
+			FAILED=$$((FAILED + 1)); \
+			continue; \
+		fi; \
+		TEMP="/tmp/nb_$$$$.ipynb" && \
+		if timeout 600 $(PAPERMILL) "$$nb" "$$TEMP" \
+			--kernel python3 \
+			--execution-timeout 3600 \
+			--cwd "$(PROJECT_ROOT)" 2>&1; then \
+			cp "$$TEMP" "$$nb" && \
+			rm -f "$$TEMP" && \
+			echo "SUCCESS" && \
+			COMPLETED=$$((COMPLETED + 1)); \
+		else \
+			rm -f "$$TEMP" && \
+			echo "FAILED" && \
+			FAILED=$$((FAILED + 1)); \
+		fi; \
+		sleep 2; \
+	done && \
+	echo "" && \
+	echo "============================================================" && \
+	echo "Build Complete" && \
+	echo "============================================================" && \
+	echo "Success: $$COMPLETED/$$TOTAL" && \
+	echo "Failed:  $$FAILED/$$TOTAL" && \
+	echo "============================================================"
+
+clean:
+	@rm -f /tmp/nb_*.ipynb
+	@echo "Cleaned temporary files"
