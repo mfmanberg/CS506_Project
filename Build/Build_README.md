@@ -9,7 +9,7 @@ Automated execution system for 9 Jupyter notebooks with dependency management an
 Build\run_build.bat 
 
 # Linux / WSL Terminal
-make -f Build/Makefile.wsl run
+make -f Build/Makefile.simple wsl run
 ```
 
 **First-time setup**: Auto-installs dependencies from `Dependencies/requirements.txt`  
