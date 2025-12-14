@@ -83,6 +83,14 @@ These visualizations were created during initial data exploration to understand 
 ![Top 10 Zones by Average Load](2_FIGURES/FIGURES/2023_top10_names_avg_load.png)
 *Top 10 NYISO Zones by Average Load in 2023 - Geographic distribution of electricity demand*
 
+### Linear Regression Preliminary Analysis
+
+![Multivariate Stepwise Regression Performance Across Time Scales](2_FIGURES/FIGURES/linear_regression_image.png)
+*Four-panel analysis of multivariate stepwise regression performance across temporal aggregations (5min to 1day). **Top-left (Test R²)**: Consistent R² values of 0.20-0.27 across all time scales demonstrate stable predictive power regardless of aggregation. **Top-right (RMSE)**: Exponential growth in RMSE with coarser aggregation (from ~500 at 5min to 32,000+ at daily) reflects cumulative load scaling, not model degradation. **Bottom-left (MAPE)**: Remarkably stable MAPE around 6-10% across all scales proves the model maintains accuracy independent of time resolution—the key metric for cross-scale comparison. **Bottom-right (Features Selected)**: Feature count decreases from 23 at fine resolutions to just 5 for daily predictions, showing efficiency gains at coarser scales where fewer weather variables capture the essential patterns.*
+
+![Residuals by Hour of Day](2_FIGURES/FIGURES/linear_regression4.png)
+*Boxplot analysis of prediction residuals across 24 hours reveals systematic temporal patterns in model errors. **Morning hours (5-10 AM)** show larger positive residuals (median ~100-300 MW), indicating the model **underpredicts** during the morning ramp-up when **businesses open, HVAC systems activate, and industrial loads spike**. **Midday hours (11 AM-2 PM)** show residuals centered near zero with high variance, suggesting volatile lunch-hour patterns and variable commercial activity. **Evening hours (6-11 PM)** exhibit negative residuals (median ~-100 to -200 MW), indicating **overprediction** during the evening decline when **businesses close and industrial operations wind down**. **Overnight hours (midnight-4 AM)** show tight distributions with slight negative bias, reflecting stable baseline residential loads. This pattern strongly suggests that **business events** (opening/closing times, shift changes, lunch breaks) create systematic deviations that a pure weather-based model cannot capture, motivating the need for **temporal features** (hour of day, day of week) or **event-driven** forecasting approaches.*
+
 
 # Data Processing
 
@@ -222,6 +230,17 @@ Two regression approaches were compared across multiple time scales:
    - Constraint: Only one feature per feature type (e.g., one soil moisture depth)
    - Features include weather data (temperature, humidity, precipitation) and environmental data (soil moisture, wind speed, solar insolation)
 
+#### Univariate Linear Regression Prediction
+
+![Linear Regression Univariate Prediction 2023-2025](2_FIGURES/FIGURES/lr_univariate_prediction_2023_2025.png)
+*Univariate linear regression predictions (orange) versus actual total load (blue) for the 2023-2025 test period. The model uses only time as a predictor, resulting in a simple linear trend that fails to capture seasonal variations, daily cycles, and load volatility. This baseline demonstrates why multivariate weather features are essential for accurate energy forecasting.*
+
+**Key Insights from Univariate Model:**
+- **Linear trend limitation**: The time-only model produces a flat trend line that cannot adapt to seasonal or weather-driven load variations
+- **Missed patterns**: Fails to capture daily cycles, weekend effects, and seasonal peaks/troughs visible in actual load data
+- **High error rate**: MAPE of 67.78% indicates the model is off by more than two-thirds on average
+- **Motivates multivariate approach**: The dramatic gap between predictions and actuals demonstrates the critical need for weather and environmental features
+
 ### Data Processing
 
 - **Training Data**: 2001-20021
@@ -264,6 +283,54 @@ Two regression approaches were compared across multiple time scales:
 - **Multivariate**: MAPE = 10.13% (85.0% improvement)
 - **Features Used**: 5 (highly efficient feature set)
 - **Best performance** with fewest features
+
+================================================================================================================IMPROVEMENT SUMMARY
+===============================================================================================================
+Average R² Improvement:    0.2712
+Average RMSE Improvement:  43935.946
+Average MAPE Improvement:  48.271%
+
+Best R² Improvement:       1day (0.3133)
+Best RMSE Improvement:     1day (184361.916)
+Best MAPE Improvement:     1day (51.135%)
+================================================================================================================
+
+### Key Findings
+
+The multivariate stepwise regression analysis reveals critical insights about energy load forecasting:
+
+1. **Weather features are essential**: Incorporating MesoNet weather data reduces prediction error by ~85% compared to time-only models
+2. **Efficiency at daily scale**: Daily aggregation achieves best performance (10.13% MAPE) with only 5 features, demonstrating that coarser time scales benefit from feature parsimony
+3. **Consistent MAPE across scales**: Unlike RMSE which scales with aggregation window size, MAPE remains stable (9-10%) across all time resolutions, making it ideal for cross-scale comparison
+4. **Precipitation dominates**: Incremental precipitation shows the strongest coefficient, indicating rainfall events significantly impact load patterns
+
+### Visualizations: Model Diagnostics
+
+![Univariate Residuals Distribution](2_FIGURES/FIGURES/linear_regression2_image.png)
+*Residuals histogram for univariate (time-only) linear regression showing a roughly normal distribution centered near zero but with wide spread. The distribution reveals systematic prediction errors across the full range of ±1500 MW, indicating the model's inability to capture complex load dynamics with time alone.*
+
+![Stepwise Regression Residuals Distribution](2_FIGURES/FIGURES/linear_regression5_image.png)
+*Multivariate stepwise regression residuals (purple bars) show a tight near-normal distribution centered precisely at zero (red dashed line), spanning approximately ±600 MW compared to ±1500 MW for the univariate model. The narrow spread and symmetric shape indicate **unbiased predictions** with significantly reduced error variance. This 60% reduction in residual range demonstrates that weather features successfully capture the major sources of load variation, leaving only random noise and unpredictable business events as residual errors.*
+
+![Multivariate Comparison Across Metrics](2_FIGURES/FIGURES/linear_regression6_image.png)
+*Comprehensive 4-panel comparison of univariate vs multivariate stepwise regression across all time scales. Top-left: Multivariate models (blue) achieve R² of 0.20-0.27 while univariate models (coral) fail with negative R². Top-right: Dramatic RMSE reduction from multivariate approach, especially at daily aggregation (184k MW improvement). Bottom-left: R² improvement consistently positive across all scales (0.25-0.31). Bottom-right: RMSE improvement grows exponentially with aggregation window, reaching 184k MW for daily predictions. This visualization powerfully demonstrates that weather features transform regression from completely ineffective (negative R²) to reasonably predictive.*
+
+
+![Stepwise Regression Feature Coefficients](2_FIGURES/FIGURES/linear_regression3_image.png)
+*Feature importance analysis from multivariate stepwise regression showing coefficient values for selected weather and environmental predictors. Precipitation incremental has the largest positive impact on load prediction, while soil moisture shows a significant negative correlation. This reveals which weather factors most strongly influence electricity demand patterns.*
+
+
+PERCENTAGE IMPROVEMENT
+========================================================================================================================
+5min     - R²:   802.7% | RMSE:   78.9% | MAPE:   83.7% | Features: 23
+15min    - R²:   739.4% | RMSE:   78.1% | MAPE:   83.1% | Features: 23
+30min    - R²:   730.9% | RMSE:   78.1% | MAPE:   82.9% | Features: 21
+1hour    - R²:   710.1% | RMSE:   77.8% | MAPE:   82.2% | Features: 20
+3hour    - R²:   717.3% | RMSE:   78.3% | MAPE:   83.4% | Features: 22
+6hour    - R²:   734.7% | RMSE:   79.3% | MAPE:   84.5% | Features: 18
+12hour   - R²:   881.3% | RMSE:   81.5% | MAPE:   87.4% | Features: 10
+1day     - R²:   875.5% | RMSE:   84.8% | MAPE:   89.6% | Features:  5
+================================================================================================================
 
 ### Key Findings
 
