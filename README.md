@@ -224,12 +224,11 @@ Two regression approaches were compared across multiple time scales:
 
 ### Data Processing
 
-- **Training Data**: 2001-2021 (21 years)
-- **Validation Data**: 2022 (1 year)
-- **Testing Data**: 2023-2025 (prediction window)
-- **Aggregation Levels**: 5-minute, 15-minute, 30-minute, 1-hour, 3-hour, 6-hour, 12-hour, 1-day
+- **Training Data**: 2001-20021
+- **Validation Data**: 2022
+- **Testing Data**: 2023-2024
+- **Aggregation Levels**: 15 min, Hourly, Daily
 - **Data Source**: NYISO load data fused with MesoNet weather station data
-- **Train/Test Split**: Temporal split to prevent data leakage and simulate real-world forecasting
 
 ### Results Comparison: Univariate vs Multivariate
 
