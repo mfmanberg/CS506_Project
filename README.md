@@ -2,7 +2,9 @@
 
 ## Youtube Video
 
-https://youtu.be/_F0CSRmd0l0
+https://youtu.be/KYrckP1kqOIR
+
+NOTE: Run activate_env.sh via Dependencies\activate_env.sh to install dependencies and see Build\Build_README.md for build instructions. Makefile assumes master.parquet is in proper folder. If it is not, run all 1st_pass.ipynb. 1st_pass.ipynb will not run if parquet is present. 
 
 **Description of the project**
 
@@ -76,7 +78,7 @@ These visualizations were created during initial data exploration to understand 
 
 
 ![Day by Day January 2023](2_FIGURES/FIGURES/day_by_day_jan_2023.png)
-*Daily Load Patterns - January 2023 - Demonstrates consistent diurnal cycles with weather-driven variations* - WEATHHER BE A GOOD FEATURE!!
+*Daily Load Patterns - January 2023 - Demonstrates consistent diurnal cycles with weather-driven variations* - WEATHER COULD BE A GOOD FEATURE!!
 
 ![Top 10 Zones by Average Load](2_FIGURES/FIGURES/2023_top10_names_avg_load.png)
 *Top 10 NYISO Zones by Average Load in 2023 - Geographic distribution of electricity demand*
@@ -222,9 +224,10 @@ Two regression approaches were compared across multiple time scales:
 
 ### Data Processing
 
-- **Training Data**: 2001-2023
+- **Training Data**: 2001-20021
+- **Validation Data**: 2022
 - **Testing Data**: 2023-2024
-- **Aggregation Levels**: 5min, 15min, 30min, 1hour, 3hour, 6hour, 12hour, daily
+- **Aggregation Levels**: 15 min, Hourly, Daily
 - **Data Source**: NYISO load data fused with MesoNet weather station data
 
 ### Results Comparison: Univariate vs Multivariate
@@ -232,20 +235,17 @@ Two regression approaches were compared across multiple time scales:
 #### 5-Minute Aggregation
 - **Univariate**: R² = -0.0341, RMSE = 204.6, MAPE = 57.4%
 - **Multivariate**: R² = 0.2433, RMSE = 161.5, MAPE = 9.3%
-- **Improvement**:  -21.1% RMSE, -48.1% MAPE
 - **Features Used**: 23 (soil_temp, soil_moisture, dewpoint, precip, wind, snow_depth, solar, pressure, humidity, temperature)
 
 #### 15-Minute Aggregation
 - **Univariate**: R² = -0.0316, RMSE = 677.9, MAPE = 57.3%
 - **Multivariate**: R² = 0.2209, RMSE = 588.0, MAPE = 9.5%
-- **Improvement**: -13.3% RMSE, -47.8% MAPE
 - **Features Used**: 23
 
 #### 1-Hour Aggregation
 - **Univariate**: R² = -0.0329, RMSE = 2641.0, MAPE = 56.9%
 - **Multivariate**: R² = 0.2120, RMSE = 2036.4, MAPE = 10.2%
-- **Improvement**:  -22.9% RMSE, -46.7% MAPE
-- **Features Used**: 20
+ - **Features Used**: 20
 
 ### Key Findings
 
@@ -349,7 +349,7 @@ The SVR models generate real-time prediction animations showing performance acro
 
 <div align="center">
 
-## 🎬 SVR Animation Grid - Click to View in Full Notebooks
+## SVR Animation Grid - Click to View in Full Notebooks
 
 <table>
   <tr>
@@ -503,12 +503,12 @@ The metrics computed include:
 * **R² (Coefficient of Determination)** - *Reported for context*
 * **Runtime (seconds)**
 
-| Aggregation | MAPE | MAE   | RMSE  | R²       | Time (s) |
-|------------|------|-------|-------|----------|----------|
-| five       | 0.27 | 4.16  | 5.86  | 0.99956  | 23.30    |
-| quarter    | 0.37 | 5.81  | 8.08  | 0.99918  | 9.96     |
-| hourly     | 1.63 | 24.98 | 32.84 | 0.98625  | 4.64     |
-| daily      | 3.11 | 48.44 | 65.43 | 0.91405  | 1.05     |
+| Aggregation | MAPE | MAE   | RMSE  | Time (s) |
+|------------|------|-------|-------|----------|
+| five       | 0.27 | 4.16  | 5.86  | 23.30    |
+| quarter    | 0.37 | 5.81  | 8.08  |  9.96    |
+| hourly     | 1.63 | 24.98 | 32.84 | 4.64     |
+| daily      | 3.11 | 48.44 | 65.43 | 1.05     |
 
 **Total time:** 210.38 seconds
 
@@ -716,6 +716,17 @@ XGBoost's rapid training time (210 seconds for all aggregation levels) enables:
 
 ## Conclusion
 
+
+Considering best nmultivariate models on the subsample of 2020 - 2025 representatviely, Daily MAPE (2020-2025):
+
+Linear Regression: 11.42%
+XGBoost: 0.33%
+SVR: 11.02%
+
 XGBoost outperforms both linear regression and SVR for energy load forecasting because it fundamentally aligns with the chaotic, non-linear, and event-driven nature of electricity consumption. Its tree-based architecture naturally accommodates business events—sudden load spikes, outages, and regime changes—that confound smooth kernel-based methods like SVR and completely defeat linear assumptions. The fusion with MesoNet weather data amplifies this advantage by providing environmental context that helps the model distinguish between regular fluctuations and genuine business events. With sub-1% MAPE at fine time scales and near-instantaneous training, XGBoost represents a practical, deployable solution for NYISO's forecasting challenges.
+
+
+
+
 
 ---
