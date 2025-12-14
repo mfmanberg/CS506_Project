@@ -2,9 +2,9 @@
 
 ## Youtube Video
 
-https://youtu.be/KYrckP1kqOI
+https://youtu.be/KYrckP1kqOIR
 
-NOTE: Please see Build_README.md, Requirements.txt, and Workflow_README.md in their respective folders. 
+NOTE: Run activate_env.sh via Dependencies\activate_env.sh to install dependencies and Build\Build_README.md for build. Makefile assumes master.parquet is in proper folder. If it is not, run all 1st_pass.ipynb. 1st_pass.ipynb will not run if parquet is present. 
 
 **Description of the project**
 
