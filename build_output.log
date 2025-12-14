@@ -1,0 +1,12 @@
+============================================================
+Starting Notebook Execution
+============================================================
+
+
+[1/9] 2_FIGURES/2_data_exploration/nyiso_data_exploration.ipynb
+----------------------------------------
+Input Notebook:  2_FIGURES/2_data_exploration/nyiso_data_exploration.ipynb
+Output Notebook: /tmp/nb_9810.ipynb
+Working directory: /mnt/c/Users/Matt/Desktop/CS506/CS506_Project
+Executing:   0%|          | 0/19 [00:00<?, ?cell/s]Executing notebook with kernel: python3
+Executing:   5%|▌         | 1/19 [00:09<02:57,  9.87s/cell]

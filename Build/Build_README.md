@@ -8,9 +8,9 @@ Automated execution system for 9 Jupyter notebooks with dependency management an
 # Linux / WSL Terminal
 make -f Build/Makefile.simple run
 ```
+Example Commmand: wsl bash -c "cd /mnt/c/Users/Matt/Desktop/CS506/CS506_Project && make -f Build/Makefile.simple run"
 
-**Note**: `Build\run_build.bat` needs to be updated to call Makefile.simple  
-**Execution time**: 30-60 minutes for 8 notebooks  
+**Execution time**: 30-60 minutes for 9 notebooks  
 **Output**: Results logged to `Build/model_results.log`
 ---
 
@@ -19,10 +19,12 @@ make -f Build/Makefile.simple run
 ### Makefile.simple
 Simplified build orchestration for WSL/Linux:
 - Auto-detects `PROJECT_ROOT` from Makefile location
-- Executes 8 notebooks via papermill (3600s timeout each)
+- Executes 9 notebooks via papermill (3600s timeout each)
 - Exports `PYTHONPATH="$PROJECT_ROOT:$PROJECT_ROOT/Build"`
 - Outputs to `/tmp/` then copies back (prevents file locks)
 - Sequential execution with error tracking
+- Automatic dependency checking (pandas, numpy, sklearn, xgboost, papermill)
+- Auto-creates `.venv_wsl` if missing
 
 **Available Targets**:
 ```bash
@@ -35,14 +37,13 @@ make -f Build/Makefile.simple clean            # Remove temp files
 Windows wrapper that:
 1. Detects script location using `%~dp0` (no hardcoded paths)
 2. Converts Windows path to WSL: `C:\Users\...` → `/mnt/c/Users/...`
-3. **Currently calls**: `make -f Build/Makefile.wsl run` (needs update to Makefile.simple)
+3. Calls: `make -f Build/Makefile.simple run`
 
 ### path_utils.py
-Cross-platform path resolver used in all notebooks:
+Cross-platform path resolver for notebooks:
 ```python
-from path_utils import get_project_root
-
-project_root = get_project_root()  # Auto-detects from Build/ location
+from pathlib import Path
+project_root = Path.cwd()  # Papermill sets cwd to project root
 data_path = project_root / "1_LIB" / "master" / "master.parquet"
 ```
 
@@ -56,7 +57,13 @@ Parses executed notebooks (JSON format), extracts:
 
 ## Dependency Management
 
-**Manual setup required**:
+**Automatic setup** (handled by Makefile.simple):
+- Checks for `.venv_wsl` virtual environment
+- Creates it if missing
+- Verifies required packages (pandas, numpy, sklearn, xgboost, papermill)
+- Installs from `Dependencies/requirements.txt` if needed
+
+**Manual setup** (if needed):
 ```bash
 python3 -m venv .venv_wsl
 source .venv_wsl/bin/activate
@@ -118,22 +125,23 @@ python3 Build/check_papermill_output.py
 
 ## Performance
 
-- **Total time**: 30-60 minutes (8 notebooks)
+- **Total time**: 30-60 minutes (9 notebooks)
 - **Memory**: 300-500 MB per notebook
 - **Data**: master.parquet (38 MB file, 339 MB in memory)
-- **Execution**: Sequential (one notebook at a time, 600s timeout per notebook)
+- **Execution**: Sequential (one notebook at a time, 3600s timeout per notebook)
 
 ---
 
 ## Adding Notebooks
 
 1. Add to `Makefile.simple` NOTEBOOKS list
-2. Update `run` target (increment TOTAL, add case)
-3. Add to `extract_results.py` notebooks list
-4. Use `path_utils` in notebook:
+2. Update `TOTAL` count in `run` target
+3. Add to `extract_results.py` notebooks list (if extracting metrics)
+4. Use simple path in notebook (papermill sets cwd):
    ```python
-   from path_utils import get_project_root
-   project_root = get_project_root()
+   from pathlib import Path
+   project_root = Path.cwd()
+   data_path = project_root / "1_LIB" / "master" / "master.parquet"
    ```
 
 ---

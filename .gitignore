@@ -28,4 +28,8 @@ venv/
 # Logs
 model_results.log
 
-.vscode
+.vscode3_OUTPUT/3_svr/SVMHourly.ipynb
+3_OUTPUT/3_svr/SVM_Trunc.ipynb
+*.ipynb.backup
+*_executed.ipynb
+*_output.ipynb

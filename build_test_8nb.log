@@ -1,0 +1,11 @@
+Environment Check:
+  Project Root: /mnt/c/Users/Matt/Desktop/CS506/CS506_Project
+  Virtual Env: /mnt/c/Users/Matt/Desktop/CS506/CS506_Project/.venv_wsl
+  Python: /mnt/c/Users/Matt/Desktop/CS506/CS506_Project/.venv_wsl/bin/python
+  Papermill: /mnt/c/Users/Matt/Desktop/CS506/CS506_Project/.venv_wsl/bin/papermill
+
+============================================================
+Checking Dependencies
+============================================================
+Activating virtual environment...
+Checking for required packages...

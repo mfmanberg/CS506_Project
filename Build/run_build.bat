@@ -24,7 +24,7 @@ echo WSL Path: %WSL_PATH%
 echo ===================================================================
 echo.
 
-wsl bash -c "cd '%WSL_PATH%' && make -f Build/Makefile.wsl run"
+wsl bash -c "cd '%WSL_PATH%' && make -f Build/Makefile.simple run"
 
 echo.
 echo ===================================================================
