@@ -9,8 +9,10 @@ https://youtu.be/_F0CSRmd0l0
 All project figures, charts, and animations are centralized in [2_FIGURES/FIGURES](2_FIGURES/FIGURES/) for easy access and reproducibility.
 
 **Available Visualizations:**
-- 📊 **Static Charts**: 8 PNG images including model performance comparisons, load patterns, and geographic zone maps
-- 🎬 **Animated GIFs**: 6 SVR model animations showing real-time prediction tracking across different time scales
+- 📊 **Static Charts**: 11 PNG images including model performance comparisons, load patterns, geographic zone maps, and archived baseline metrics
+- 🎬 **Animated GIFs**: 7 animations including:
+  - 1 multi-year load evolution animation (2020-2025) with significant event markers
+  - 6 SVR model animations showing real-time prediction tracking across different time scales
 - 📄 **Data Tables**: CSV files with statistical summaries and performance metrics
 - 📋 **Export Manifest**: Complete catalog of all exported figures in [export_manifest.json](2_FIGURES/FIGURES/export_manifest.json)
 
@@ -84,6 +86,13 @@ There are two main goals of this project:
 
 These visualizations were created during initial data exploration to understand load patterns and temporal behavior.
 
+### Multi-Year Load Evolution Animation
+
+![Multi-Year Load Evolution](2_FIGURES/FIGURES/multi_year_load_evolution.gif)
+*Animated visualization showing the progressive evolution of New York's total electrical load from 2020-2025 with smoothing spline trend overlay. Key pandemic markers (COVID-19 start and emergency end) are displayed as labeled vertical lines. The Y-axis starts at 2000 MW for enhanced visibility of load variations. This animation reveals seasonal patterns, long-term trends, and the impact of major events on electricity demand. The spline curve (red) shows the overall multi-year trend, while individual year traces show detailed daily fluctuations.*
+
+### Static Load Pattern Visualizations
+
 ![Total Load 2023 - 15 Minute Intervals](2_FIGURES/FIGURES/total_load_2023_15min.png)
 *2023 Total Energy Load by 15-Minute Intervals - Shows daily periodicity and weekend/weekday patterns*
 
@@ -92,6 +101,51 @@ These visualizations were created during initial data exploration to understand 
 
 ![Load with Losses](2_FIGURES/FIGURES/load_with_losses.png)
 *Energy Load Including Transmission Losses - Complete system load accounting for grid inefficiencies*
+
+![2023 Total Load Per Day](2_FIGURES/FIGURES/2023_total_load_per_day.png)
+*Daily Total Load for 2023 - Aggregated daily electricity consumption showing seasonal variations*
+
+![Top 10 Zones by Average Load](2_FIGURES/FIGURES/2023_top10_names_avg_load.png)
+*Top 10 NYISO Zones by Average Load in 2023 - Geographic distribution of electricity demand*
+
+### Model Performance Visualizations
+
+![XGBoost Model Comparison](2_FIGURES/FIGURES/3_xg_boost_model_comparison.png)
+*XGBoost Model Performance Across Different Time Scales - Comparison of prediction accuracy for 5-minute, hourly, and daily aggregations*
+
+![XGBoost Baseline Performance](2_FIGURES/FIGURES/3_xg_boost_baseline_performance.png)
+*XGBoost Baseline Performance Metrics - MAPE, MAE, and RMSE across different forecasting horizons*
+
+![SVR Model Performance](2_FIGURES/FIGURES/svr_readme_graph.png)
+*Support Vector Regression Model Results - Comparison of different SVR configurations including weather-augmented models*
+
+![Vault Model Comparison](2_FIGURES/FIGURES/vault_model_comparison.png)
+*Archived Model Comparison - Historical performance metrics from earlier model iterations*
+
+![Vault Baseline Performance](2_FIGURES/FIGURES/vault_baseline_performance.png)
+*Archived Baseline Performance - Reference baseline from initial model development*
+
+### SVR Model Animations
+
+The following animations show real-time prediction tracking for Support Vector Regression models at different time scales:
+
+![SVR 5-Minute Animation](2_FIGURES/FIGURES/svr_animations/svr_5min_animation.gif)
+*SVR 5-Minute Predictions - High-resolution short-term forecasting*
+
+![SVR 15-Minute Animation](2_FIGURES/FIGURES/svr_animations/svr_15min_animation.gif)
+*SVR 15-Minute Predictions - Quarter-hourly load forecasting*
+
+![SVR Hourly Animation](2_FIGURES/FIGURES/svr_animations/svr_hourly_animation.gif)
+*SVR Hourly Predictions - Standard hourly forecasting model*
+
+![SVR Daily with Weather Animation](2_FIGURES/FIGURES/svr_animations/svr_daily_weather_animation.gif)
+*SVR Daily Predictions with Weather Data - Weather-augmented daily forecasting*
+
+![SVR Daily Load Only Animation](2_FIGURES/FIGURES/svr_animations/svr_daily_loadonly_animation.gif)
+*SVR Daily Predictions (Load Only) - Baseline daily model without weather features*
+
+![SVR Hourly Truncated Animation](2_FIGURES/FIGURES/svr_animations/svr_hourly_trunc_animation.gif)
+*SVR Hourly Truncated - Focused view of hourly predictions on limited time window*
 
 
 # Data Processing
