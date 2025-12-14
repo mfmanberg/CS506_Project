@@ -5,60 +5,37 @@ Automated execution system for 9 Jupyter notebooks with dependency management an
 ## Quick Start
 
 ```bash
-# Windows with WSL - VALIDATED!!!!!
-Build\run_build.bat 
-
 # Linux / WSL Terminal
-make -f Build/Makefile.simple wsl run
+make -f Build/Makefile.simple run
 ```
 
-**First-time setup**: Auto-installs dependencies from `Dependencies/requirements.txt`  
-**Execution time**: 30-60 minutes for all 9 notebooks  
+**Note**: `Build\run_build.bat` needs to be updated to call Makefile.simple  
+**Execution time**: 30-60 minutes for 8 notebooks  
 **Output**: Results logged to `Build/model_results.log`
-
----
-
-## Files
-
-```
-Build/
-├── Makefile.wsl              # Build automation (WSL/Linux)
-├── run_build.bat             # Windows wrapper
-├── path_utils.py             # Cross-platform paths
-├── extract_results.py        # Metric extraction
-├── test_notebook_execution.py# Diagnostics
-├── export_svr_animations.py  # SVR animation generator
-├── run_export_animations.sh  # Animation launcher (Bash)
-├── run_export_animations.ps1 # Animation launcher (PowerShell)
-└── model_results.log         # Results (generated)
-```
-
 ---
 
 ## How It Works
 
-### Makefile.wsl
-Main build orchestration for WSL/Linux:
+### Makefile.simple
+Simplified build orchestration for WSL/Linux:
 - Auto-detects `PROJECT_ROOT` from Makefile location
-- Checks/installs dependencies (compares `requirements.txt` timestamp)
-- Executes 9 notebooks via papermill (3600s timeout each)
+- Executes 8 notebooks via papermill (3600s timeout each)
 - Exports `PYTHONPATH="$PROJECT_ROOT:$PROJECT_ROOT/Build"`
-- Outputs to `/tmp/papermill_output/` then copies back (prevents file locks)
+- Outputs to `/tmp/` then copies back (prevents file locks)
+- Sequential execution with error tracking
 
-**Key Targets**:
+**Available Targets**:
 ```bash
-make -f Build/Makefile.wsl run              # Execute all notebooks
-make -f Build/Makefile.wsl run-linear       # Single notebook
-make -f Build/Makefile.wsl setup            # Create venv
-make -f Build/Makefile.wsl clean-outputs    # Clear outputs
-make -f Build/Makefile.wsl help             # Show all targets
+make -f Build/Makefile.simple run              # Execute all notebooks
+make -f Build/Makefile.simple all              # Same as run
+make -f Build/Makefile.simple clean            # Remove temp files
 ```
 
 ### run_build.bat
 Windows wrapper that:
 1. Detects script location using `%~dp0` (no hardcoded paths)
 2. Converts Windows path to WSL: `C:\Users\...` → `/mnt/c/Users/...`
-3. Calls WSL: `wsl bash -c "cd <wsl_path> && make -f Build/Makefile.wsl run"`
+3. **Currently calls**: `make -f Build/Makefile.wsl run` (needs update to Makefile.simple)
 
 ### path_utils.py
 Cross-platform path resolver used in all notebooks:
@@ -79,16 +56,11 @@ Parses executed notebooks (JSON format), extracts:
 
 ## Dependency Management
 
-Auto-installs before each build:
+**Manual setup required**:
 ```bash
-if requirements.txt newer than .venv_wsl/.deps_installed:
-  pip install -r requirements.txt
-  touch .venv_wsl/.deps_installed
-```
-
-Manual setup:
-```bash
-make -f Build/Makefile.wsl setup
+python3 -m venv .venv_wsl
+source .venv_wsl/bin/activate
+pip install -r Dependencies/requirements.txt
 ```
 
 ---
@@ -104,9 +76,10 @@ make -f Build/Makefile.wsl setup
 ```bash
 git clone <repo_url>
 cd CS506_Project
-Build\run_build.bat  # Windows + WSL
-# OR
-make -f Build/Makefile.wsl run  # Linux
+python3 -m venv .venv_wsl
+source .venv_wsl/bin/activate
+pip install -r Dependencies/requirements.txt
+make -f Build/Makefile.simple run  # Linux/WSL
 ```
 
 ---
@@ -115,46 +88,46 @@ make -f Build/Makefile.wsl run  # Linux
 
 | Issue | Solution |
 |-------|----------|
-| Build fails immediately | `make -f Build/Makefile.wsl setup` |
-| Notebooks abort | Don't run commands in same terminal during build<br>Use `run_build.bat` (separate window) |
+| Build fails immediately | Ensure `.venv_wsl` exists with dependencies installed |
+| Notebooks abort | Don't run commands in same terminal during build |
 | Import errors | Check `PYTHONPATH` exported in Makefile |
 | File locks | Close notebooks in VS Code before build |
-| Dependency errors | `rm .venv_wsl/.deps_installed && make -f Build/Makefile.wsl run` |
+| Dependency errors | `pip install -r Dependencies/requirements.txt` |
 
 ---
 
 ## Advanced Usage
 
 ```bash
-# Individual notebooks
-make -f Build/Makefile.wsl run-linear
-make -f Build/Makefile.wsl run-svm-daily
+# Run all notebooks
+make -f Build/Makefile.simple run
 
-# Clear outputs and rerun
-make -f Build/Makefile.wsl clean-outputs run
+# Clean temp files
+make -f Build/Makefile.simple clean
 
 # View results
 cat Build/model_results.log
 tail -50 Build/model_results.log
 
 # Diagnostics
-python3 Build/test_notebook_execution.py
+python3 Build/check_nb_status.py
+python3 Build/check_papermill_output.py
 ```
 
 ---
 
 ## Performance
 
-- **Total time**: 30-60 minutes (9 notebooks)
+- **Total time**: 30-60 minutes (8 notebooks)
 - **Memory**: 300-500 MB per notebook
 - **Data**: master.parquet (38 MB file, 339 MB in memory)
-- **Execution**: Sequential (one notebook at a time)
+- **Execution**: Sequential (one notebook at a time, 600s timeout per notebook)
 
 ---
 
 ## Adding Notebooks
 
-1. Add to `Makefile.wsl` NOTEBOOKS list
+1. Add to `Makefile.simple` NOTEBOOKS list
 2. Update `run` target (increment TOTAL, add case)
 3. Add to `extract_results.py` notebooks list
 4. Use `path_utils` in notebook:
@@ -172,12 +145,10 @@ python3 Build/test_notebook_execution.py
 ### Running on WSL (Windows Subsystem for Linux)
 
 ```bash
-# From Windows (PowerShell/CMD)
-Build\run_build.bat
-
-# Or from WSL terminal
+# From WSL terminal
 cd /mnt/c/Users/<username>/path/to/CS506_Project
-make -f Build/Makefile.wsl run
+source .venv_wsl/bin/activate
+make -f Build/Makefile.simple run
 ```
 
 ### Running on Native Linux
@@ -185,7 +156,7 @@ make -f Build/Makefile.wsl run
 ```bash
 # From project root
 cd ~/CS506_Project  # or wherever you cloned the repo
-make -f Build/Makefile.wsl run
+make -f Build/Makefile.simple run
 ```
 
 **Key Differences**:
@@ -199,9 +170,9 @@ make -f Build/Makefile.wsl run
 
 **Troubleshooting**:
 ```bash
-python3 Build/test_notebook_execution.py  # Run diagnostics
+python3 Build/check_nb_status.py          # Check notebook status
 cat Build/model_results.log               # View results
-make -f Build/Makefile.wsl help           # Show all targets
+make -f Build/Makefile.simple clean       # Clean temp files
 ```
 
 ---
@@ -229,22 +200,6 @@ bash Build/run_export_animations.sh
 source .venv_wsl/bin/activate
 # Or use helper
 source Dependencies/activate_env.sh
-
-# Run generator
-python Build/export_svr_animations.py
-```
-
-### Output
-
-Generates 6 GIFs in `2_FIGURES/FIGURES/svr_animations/`:
-- `svr_5min_animation.gif` - 5-minute resolution (0.28% MAPE)
-- `svr_15min_animation.gif` - 15-minute resolution (~0.35% MAPE)
-- `svr_hourly_animation.gif` - Hourly resolution (0.28% MAPE)
-- `svr_hourly_trunc_animation.gif` - Truncated dataset
-- `svr_daily_weather_animation.gif` - Daily + weather (~3.5% MAPE)
-- `svr_daily_loadonly_animation.gif` - Daily load-only (~5.2% MAPE)
-
-**Settings:** 5 fps, 15 seconds duration, auto-looping
 
 ---
 
