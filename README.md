@@ -4,7 +4,7 @@
 
 https://youtu.be/KYrckP1kqOIR
 
-NOTE: Run activate_env.sh via Dependencies\activate_env.sh to install dependencies and Build\Build_README.md for build. Makefile assumes master.parquet is in proper folder. If it is not, run all 1st_pass.ipynb. 1st_pass.ipynb will not run if parquet is present. 
+NOTE: Run activate_env.sh via Dependencies\activate_env.sh to install dependencies and see Build\Build_README.md for build instructions. Makefile assumes master.parquet is in proper folder. If it is not, run all 1st_pass.ipynb. 1st_pass.ipynb will not run if parquet is present. 
 
 **Description of the project**
 
