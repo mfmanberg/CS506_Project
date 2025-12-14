@@ -247,7 +247,8 @@ Two regression approaches were compared across multiple time scales:
 #### 1-Hour Aggregation
 - **Univariate**: R² = -0.0329, RMSE = 2641.0, MAPE = 56.9%
 - **Multivariate**: R² = 0.2120, RMSE = 2036.4, MAPE = 10.2%
-- **Improvement**:  -22.9% RMSE, -46.7% MAPE
+
+- 
 - **Features Used**: 20
 
 ### Key Findings
@@ -352,7 +353,7 @@ The SVR models generate real-time prediction animations showing performance acro
 
 <div align="center">
 
-## 🎬 SVR Animation Grid - Click to View in Full Notebooks
+## SVR Animation Grid - Click to View in Full Notebooks
 
 <table>
   <tr>
@@ -506,12 +507,12 @@ The metrics computed include:
 * **R² (Coefficient of Determination)** - *Reported for context*
 * **Runtime (seconds)**
 
-| Aggregation | MAPE | MAE   | RMSE  | R²       | Time (s) |
-|------------|------|-------|-------|----------|----------|
-| five       | 0.27 | 4.16  | 5.86  | 0.99956  | 23.30    |
-| quarter    | 0.37 | 5.81  | 8.08  | 0.99918  | 9.96     |
-| hourly     | 1.63 | 24.98 | 32.84 | 0.98625  | 4.64     |
-| daily      | 3.11 | 48.44 | 65.43 | 0.91405  | 1.05     |
+| Aggregation | MAPE | MAE   | RMSE  | Time (s) |
+|------------|------|-------|-------|----------|
+| five       | 0.27 | 4.16  | 5.86  | 23.30    |
+| quarter    | 0.37 | 5.81  | 8.08  |  9.96    |
+| hourly     | 1.63 | 24.98 | 32.84 | 4.64     |
+| daily      | 3.11 | 48.44 | 65.43 | 1.05     |
 
 **Total time:** 210.38 seconds
 
@@ -719,6 +720,17 @@ XGBoost's rapid training time (210 seconds for all aggregation levels) enables:
 
 ## Conclusion
 
+
+Considering best nmultivariate models on the subsample of 2020 - 2025 representatviely, Daily MAPE (2020-2025):
+
+Linear Regression: 11.42%
+XGBoost: 0.33%
+SVR: 11.02%
+
 XGBoost outperforms both linear regression and SVR for energy load forecasting because it fundamentally aligns with the chaotic, non-linear, and event-driven nature of electricity consumption. Its tree-based architecture naturally accommodates business events—sudden load spikes, outages, and regime changes—that confound smooth kernel-based methods like SVR and completely defeat linear assumptions. The fusion with MesoNet weather data amplifies this advantage by providing environmental context that helps the model distinguish between regular fluctuations and genuine business events. With sub-1% MAPE at fine time scales and near-instantaneous training, XGBoost represents a practical, deployable solution for NYISO's forecasting challenges.
+
+
+
+
 
 ---
