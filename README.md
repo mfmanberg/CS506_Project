@@ -4,76 +4,17 @@
 
 https://youtu.be/_F0CSRmd0l0
 
-## Figures and Visualizations
-
-All project figures, charts, and animations are centralized in [2_FIGURES/FIGURES](2_FIGURES/FIGURES/) for easy access and reproducibility.
-
-**Available Visualizations:**
-- 📊 **Static Charts**: 11 PNG images including model performance comparisons, load patterns, geographic zone maps, and archived baseline metrics
-- 🎬 **Animated GIFs**: 9 animations including:
-  - 1 multi-year load evolution animation (2020-2025) with significant event markers
-  - 2 multi-model comparison animations (2023 and 2020-2025) showing Linear Regression, XGBoost, and SVR performance
-  - 6 SVR model animations showing real-time prediction tracking across different time scales
-- 📄 **Data Tables**: CSV files with statistical summaries and performance metrics
-- 📋 **Export Manifest**: Complete catalog of all exported figures in [export_manifest.json](2_FIGURES/FIGURES/export_manifest.json)
-
-**Reproducing Figures:**
-All figures can be regenerated using the automated export script:
-```bash
-python Build/export_figures_simple.py
-```
-
-This script:
-- Copies all visualization images from source directories to the central FIGURES folder
-- Uses absolute paths for full reproducibility
-- Generates a complete manifest of all exported files
-- Organizes figures by category (data exploration, model outputs, SVR animations)
-
-### Complete Figure Inventory
-
-**Static Visualizations (PNG):**
-1. [nyiso_zones.png](2_FIGURES/FIGURES/nyiso_zones.png) - NYISO geographic service zones map
-2. [total_load_2023_15min.png](2_FIGURES/FIGURES/total_load_2023_15min.png) - 2023 load at 15-minute resolution
-3. [day_by_day_jan_2023.png](2_FIGURES/FIGURES/day_by_day_jan_2023.png) - January 2023 daily patterns
-4. [load_with_losses.png](2_FIGURES/FIGURES/load_with_losses.png) - System load including transmission losses
-5. [2023_total_load_per_day.png](2_FIGURES/FIGURES/2023_total_load_per_day.png) - 2023 daily aggregated load
-6. [2023_top10_names_avg_load.png](2_FIGURES/FIGURES/2023_top10_names_avg_load.png) - Top 10 zones by average load
-7. [3_xg_boost_baseline_performance.png](2_FIGURES/FIGURES/3_xg_boost_baseline_performance.png) - XGBoost performance metrics
-8. [3_xg_boost_model_comparison.png](2_FIGURES/FIGURES/3_xg_boost_model_comparison.png) - NYISO vs Fused model comparison
-9. [svr_readme_graph.png](2_FIGURES/FIGURES/svr_readme_graph.png) - SVR model performance visualization
-10. [vault_baseline_performance.png](2_FIGURES/FIGURES/vault_baseline_performance.png) - Archived baseline metrics
-11. [vault_model_comparison.png](2_FIGURES/FIGURES/vault_model_comparison.png) - Archived model comparison
-
-**Animated Visualizations (GIF):**
-1. [multi_year_load_evolution.gif](2_FIGURES/FIGURES/multi_year_load_evolution.gif) - 2020-2025 load evolution with spline
-2. [model_comparison_2023.gif](2_FIGURES/FIGURES/model_comparison_2023.gif) - 2023 multi-model comparison
-3. [model_comparison_2020_2025_with_events.gif](2_FIGURES/FIGURES/model_comparison_2020_2025_with_events.gif) - Multi-year model comparison with event markers
-4. [svr_5min_animation.gif](2_FIGURES/FIGURES/svr_animations/svr_5min_animation.gif) - SVR 5-minute predictions
-5. [svr_15min_animation.gif](2_FIGURES/FIGURES/svr_animations/svr_15min_animation.gif) - SVR 15-minute predictions
-6. [svr_hourly_animation.gif](2_FIGURES/FIGURES/svr_animations/svr_hourly_animation.gif) - SVR hourly predictions
-7. [svr_hourly_trunc_animation.gif](2_FIGURES/FIGURES/svr_animations/svr_hourly_trunc_animation.gif) - SVR hourly truncated
-8. [svr_daily_weather_animation.gif](2_FIGURES/FIGURES/svr_animations/svr_daily_weather_animation.gif) - SVR daily with weather
-9. [svr_daily_loadonly_animation.gif](2_FIGURES/FIGURES/svr_animations/svr_daily_loadonly_animation.gif) - SVR daily load-only
-
-**Data Files (CSV):**
-1. [2023_daily_total_load.csv](2_FIGURES/FIGURES/2023_daily_total_load.csv) - Daily aggregated load data for 2023
-2. [2023_summary_stats.csv](2_FIGURES/FIGURES/2023_summary_stats.csv) - Statistical summaries for 2023
-3. [2023_top10_names_avg_load.csv](2_FIGURES/FIGURES/2023_top10_names_avg_load.csv) - Top zones data
-
-**Metadata:**
-- [export_manifest.json](2_FIGURES/FIGURES/export_manifest.json) - Complete export catalog with timestamps
-- [FIGURES_README.md](2_FIGURES/FIGURES/FIGURES_README.md) - Detailed figure documentation
-
 **Description of the project**
 
-NYISO was birthed out of a catastrophic power outage, costing the American public millions and resulting in deaths. They have their own forecasts (they release publicly and utilize similar methodology as the private utility companies). They oversee all of NY's jurisdictions, with an imperfect picture of (my guess due to poor data sharing common in utilities) of when new load is introduced or removed in addition to other noise. This forecast is important to prevent future catastrophe. They can only charge utility bills for the Distribution and carry over the buying cost. A better forecast would result in less spot buying, and save the ratepayer (the person who pays the utility bill) millions of dollars a day in addition  to further informing NYISO’s important oversight. Previous forecasts are rooted in a deterministic methodology despite the system acting as a non-linear chaotic environment. An empirical, dynamic, and inductive data-driven approach such as Deep Learning may prove to outcompete current forecasts. Business events, from outages, industrial load spikes, residential load spikes, etc… cause a sudden seemingly-stochastic drop in load. A decision-tree may prevent further error from switching models (such as the criteria of 10% error given a time-period). 
+NYISO was birthed out of a catastrophic power outage, costing the American public millions and resulting in deaths. They have their own forecasts (they release publicly and utilize similar methodology as the private utility companies). They oversee all of NY's jurisdictions, with an imperfect picture of (my guess due to poor data sharing common in utilities) of when new load is introduced or removed in addition to other noise. This forecast is important to prevent future catastrophe. They can only charge utility bills for the Distribution and carry over the buying cost. A better forecast would result in less spot buying, and save the ratepayer (the person who pays the utility bill) millions of dollars a day in addition  to further informing NYISO’s important oversight. Previous forecasts are rooted in a deterministic methodology despite the system acting as a non-linear chaotic environment. An empirical, dynamic, and inductive data-driven approach may prove to outcompete current forecasts. Business events, from outages, industrial load spikes, residential load spikes, etc… cause a sudden seemingly-stochastic drop in load.
+
 
 ![NYISO Zones](2_FIGURES/FIGURES/nyiso_zones.png)
 *NYISO Geographic Zones*
 
 There are two main goals of this project:
 
-1. Explore data behavior of NY's Energy Load (ACF, business events, etc…).
+1. Explore data behavior of NY's Energy Load.
 2. **Attempt to outcompete NYISO's time-series forecasting of Energy Load** on an hourly or more granular scale on an aggregate or zone basis.
 
 ## Evaluation Criteria
@@ -87,17 +28,13 @@ MAPE is the primary evaluation criterion for this project, particularly for the 
 - **Business relevance**: Directly relates to cost implications of forecast errors
 
 **Secondary Metrics:**
-- **MAE (Mean Absolute Error)**: Absolute prediction error in MW
-- **RMSE (Root Mean Squared Error)**: Penalizes larger errors more heavily
 - **R² (Coefficient of Determination)**: Used primarily for Linear Regression model evaluation to assess explanatory power
-
-**Note**: While R² is reported for context, MAPE is the definitive metric for comparing model performance, especially for XGBoost.
-
+  
 ### Cost Savings
 Improved forecast accuracy directly reduces costs:
 - **Reduced spot market purchases**: Better predictions minimize emergency procurement at premium prices
 - **Optimized reserve margins**: Accurate forecasts prevent over-provisioning
-- **Fewer prediction errors**: Each 1% reduction in MAPE can save millions in operational costs
+- **Fewer prediction errors**: Each 1% reduction in MAPE can save millions in operational costs. Reduction in costs for utility companies is returned to the public by lowering expenses for the 
 
 ### Handling Extreme Events
 XGBoost's robustness to volatility is critical during:
@@ -120,7 +57,7 @@ There are two main goals of this project:
 
 ## Preliminary Visualizations
 
-These visualizations were created during initial data exploration to understand load patterns and temporal behavior.
+These visualizations were created during initial data exploration to understand load patterns and temporal behavior. It is demonstrated that "business events" will have a signfiicant affect - additional to long periods of black swan events such as covid-19. 
 
 ### Multi-Year Load Evolution Animation
 
@@ -137,59 +74,12 @@ These visualizations were created during initial data exploration to understand 
 
 ### Static Load Pattern Visualizations
 
-![Total Load 2023 - 15 Minute Intervals](2_FIGURES/FIGURES/total_load_2023_15min.png)
-*2023 Total Energy Load by 15-Minute Intervals - Shows daily periodicity and weekend/weekday patterns*
 
 ![Day by Day January 2023](2_FIGURES/FIGURES/day_by_day_jan_2023.png)
-*Daily Load Patterns - January 2023 - Demonstrates consistent diurnal cycles with weather-driven variations*
-
-![Load with Losses](2_FIGURES/FIGURES/load_with_losses.png)
-*Energy Load Including Transmission Losses - Complete system load accounting for grid inefficiencies*
-
-![2023 Total Load Per Day](2_FIGURES/FIGURES/2023_total_load_per_day.png)
-*Daily Total Load for 2023 - Aggregated daily electricity consumption showing seasonal variations*
+*Daily Load Patterns - January 2023 - Demonstrates consistent diurnal cycles with weather-driven variations* - WEATHHER BE A GOOD FEATURE!!
 
 ![Top 10 Zones by Average Load](2_FIGURES/FIGURES/2023_top10_names_avg_load.png)
 *Top 10 NYISO Zones by Average Load in 2023 - Geographic distribution of electricity demand*
-
-### Model Performance Visualizations
-
-![XGBoost Model Comparison](2_FIGURES/FIGURES/3_xg_boost_model_comparison.png)
-*XGBoost Model Performance Across Different Time Scales - Comparison of prediction accuracy for 5-minute, hourly, and daily aggregations*
-
-![XGBoost Baseline Performance](2_FIGURES/FIGURES/3_xg_boost_baseline_performance.png)
-*XGBoost Baseline Performance Metrics - MAPE, MAE, and RMSE across different forecasting horizons*
-
-![SVR Model Performance](2_FIGURES/FIGURES/svr_readme_graph.png)
-*Support Vector Regression Model Results - Comparison of different SVR configurations including weather-augmented models*
-
-![Vault Model Comparison](2_FIGURES/FIGURES/vault_model_comparison.png)
-*Archived Model Comparison - Historical performance metrics from earlier model iterations*
-
-![Vault Baseline Performance](2_FIGURES/FIGURES/vault_baseline_performance.png)
-*Archived Baseline Performance - Reference baseline from initial model development*
-
-### SVR Model Animations
-
-The following animations show real-time prediction tracking for Support Vector Regression models at different time scales:
-
-![SVR 5-Minute Animation](2_FIGURES/FIGURES/svr_animations/svr_5min_animation.gif)
-*SVR 5-Minute Predictions - High-resolution short-term forecasting*
-
-![SVR 15-Minute Animation](2_FIGURES/FIGURES/svr_animations/svr_15min_animation.gif)
-*SVR 15-Minute Predictions - Quarter-hourly load forecasting*
-
-![SVR Hourly Animation](2_FIGURES/FIGURES/svr_animations/svr_hourly_animation.gif)
-*SVR Hourly Predictions - Standard hourly forecasting model*
-
-![SVR Daily with Weather Animation](2_FIGURES/FIGURES/svr_animations/svr_daily_weather_animation.gif)
-*SVR Daily Predictions with Weather Data - Weather-augmented daily forecasting*
-
-![SVR Daily Load Only Animation](2_FIGURES/FIGURES/svr_animations/svr_daily_loadonly_animation.gif)
-*SVR Daily Predictions (Load Only) - Baseline daily model without weather features*
-
-![SVR Hourly Truncated Animation](2_FIGURES/FIGURES/svr_animations/svr_hourly_trunc_animation.gif)
-*SVR Hourly Truncated - Focused view of hourly predictions on limited time window*
 
 
 # Data Processing
@@ -216,7 +106,7 @@ The data processing pipeline consists of comprehensive ETL (Extract, Transform, 
   - Original `Time Stamp` and `Time Zone` columns dropped after conversion
 
 #### 3. Aggregation and Consolidation
-- **Regional Averaging**: Load values averaged across all NYISO zones by timestamp
+- **Regional Averaging**: Load values averaged across all Load and weather stations by timestamp to evaluate larger data behavior. 
 - **Master Dataset Creation**: All yearly CSVs combined into single `nyiso_master.parquet`
 - **Parquet Conversion**: All CSV files converted to Parquet format for efficient storage and computation
 - **Data Structure**:
@@ -226,7 +116,7 @@ The data processing pipeline consists of comprehensive ETL (Extract, Transform, 
 ### MesoNet Weather Data Processing
 
 #### 1. Data Collection and Extraction
-- **Source**: New York State MesoNet weather stations. Weather data was recieved via email, available via download in "MESONET_DOWNLOAD". 
+- **Source**: New York State MesoNet weather stations. Weather data was recieved via email, and transformed to link in 1st_pass.ipynb. 
 - **Variables**: Temperature, humidity, precipitation, wind speed, soil moisture, solar radiation, pressure
 - **Resolution**: 5-minute intervals from multiple stations across New York State
 - **Output**: Raw CSV files in `1_LIB/mesonet/mesonet_csv/`
@@ -260,11 +150,8 @@ The data processing pipeline consists of comprehensive ETL (Extract, Transform, 
 
 #### 2. Aggregation Levels
 The fused dataset supports multiple temporal aggregations:
-- **5-minute**: Raw MesoNet resolution
 - **15-minute**: Quarter-hourly aggregates
-- **30-minute**: Half-hourly aggregates
 - **Hourly**: Hourly mean values
-- **3-hour, 6-hour, 12-hour**: Multi-hour aggregates
 - **Daily**: Daily mean values
 
 #### 3. Data Quality and Storage
@@ -318,15 +205,6 @@ This repository is organized into four main directories:
 - **Reproducibility**: Consistent file naming and directory structure
 - **Efficiency**: Parquet format enables fast data loading and reduced memory footprint
 
-### 2023 Load Analysis Visualizations
-
-![2023 Total Load Per Day](2_FIGURES/FIGURES/2023_total_load_per_day.png)
-*2023 Total Energy Load by Day - Clear seasonal trends with summer peaks driven by air conditioning demand*
-
-![Top 10 Zones by Average Load](2_FIGURES/FIGURES/2023_top10_names_avg_load.png)
-*Top 10 NYISO Zones by Average Load (2023) - NYC zones dominate consumption reflecting high population density* 
-
-
 ## Linear Regression 
 
 Linear regression models were developed to establish baseline performance and explore the predictive power of temporal trends versus multivariate weather/environmental features.
@@ -354,19 +232,19 @@ Two regression approaches were compared across multiple time scales:
 #### 5-Minute Aggregation
 - **Univariate**: R² = -0.0341, RMSE = 204.6, MAPE = 57.4%
 - **Multivariate**: R² = 0.2433, RMSE = 161.5, MAPE = 9.3%
-- **Improvement**: +0.2774 R² (+803%), -21.1% RMSE, -48.1% MAPE
+- **Improvement**:  -21.1% RMSE, -48.1% MAPE
 - **Features Used**: 23 (soil_temp, soil_moisture, dewpoint, precip, wind, snow_depth, solar, pressure, humidity, temperature)
 
 #### 15-Minute Aggregation
 - **Univariate**: R² = -0.0316, RMSE = 677.9, MAPE = 57.3%
 - **Multivariate**: R² = 0.2209, RMSE = 588.0, MAPE = 9.5%
-- **Improvement**: +0.2525 R² (+739%), -13.3% RMSE, -47.8% MAPE
+- **Improvement**: -13.3% RMSE, -47.8% MAPE
 - **Features Used**: 23
 
 #### 1-Hour Aggregation
 - **Univariate**: R² = -0.0329, RMSE = 2641.0, MAPE = 56.9%
 - **Multivariate**: R² = 0.2120, RMSE = 2036.4, MAPE = 10.2%
-- **Improvement**: +0.2449 R² (+710%), -22.9% RMSE, -46.7% MAPE
+- **Improvement**:  -22.9% RMSE, -46.7% MAPE
 - **Features Used**: 20
 
 ### Key Findings
@@ -382,10 +260,9 @@ Two regression approaches were compared across multiple time scales:
 4. **Weather features are essential**: The dramatic improvement from multivariate models proves that weather and environmental features are critical for accurate load forecasting.
 
 5. **Feature efficiency**: Coarser time scales require fewer features while maintaining performance:
-   - 5-minute: 23 features → R² = 0.24
-   - Daily: 5 features → R² = 0.28
+   - Daily: 5 features → R² = 0.28 and lowest MAPE. 
 
-6. **Top predictive features** (by coefficient magnitude):
+6. **Top predictive features** (by absolute coefficient magnitude):
    - Precipitation (incremental and local)
    - Soil moisture at 25cm depth
    - Temperature at 9m height
@@ -720,14 +597,14 @@ While R² is useful for Linear Regression to assess explanatory power, and other
 ## Performance Summary Across All Models
 
 ### Linear Regression (Multivariate) - Hourly Aggregation
-- **MAPE**: 10.2% ⬅ *Primary metric*
+- **MAPE**: 10.2% <- *Primary metric*
 - **MAE**: 2,036.4
 - **RMSE**: 2,641.0
 - **R²**: 0.2120 *(Primary for Linear Regression)*
 - **Training Time**: Fast (seconds)
 
 ### Support Vector Regression (SVR) - Hourly Aggregation
-- **MAPE**: 0.28% ⬅ *Primary metric*
+- **MAPE**: 0.28% <- *Primary metric*
 - **MAE**: 47.68
 - **RMSE**: 117.83
 - **R²**: Not reported
@@ -735,7 +612,7 @@ While R² is useful for Linear Regression to assess explanatory power, and other
 - **Note**: Suffers from confusion during large jumps in training data
 
 ### XGBoost (NYISO + MesoNet Fusion) - Hourly Aggregation
-- **MAPE**: 1.63% ⬅ *Primary metric*
+- **MAPE**: 1.63%  <- *Primary metric*
 - **MAE**: 24.98
 - **RMSE**: 32.84
 - **R²**: 0.98625 *(Reported for context)*
@@ -827,6 +704,8 @@ Linear regression's poor performance (MAPE = 10.2%) demonstrates that energy loa
 - **Temporal dependencies are complex**: Load at time *t* depends non-linearly on loads at *t-1*, *t-24*, *t-168* (1 hour, 1 day, 1 week ago)
 - **Weather interactions compound**: The effect of temperature depends on humidity, season, time of day, and recent weather history
 
+The NYISO Load time series could be potentially classified as a non-linear chaotic system. 
+
 ## Practical Implications for NYISO Operations
 
 ### Real-Time Forecasting
@@ -840,144 +719,3 @@ XGBoost's rapid training time (210 seconds for all aggregation levels) enables:
 XGBoost outperforms both linear regression and SVR for energy load forecasting because it fundamentally aligns with the chaotic, non-linear, and event-driven nature of electricity consumption. Its tree-based architecture naturally accommodates business events—sudden load spikes, outages, and regime changes—that confound smooth kernel-based methods like SVR and completely defeat linear assumptions. The fusion with MesoNet weather data amplifies this advantage by providing environmental context that helps the model distinguish between regular fluctuations and genuine business events. With sub-1% MAPE at fine time scales and near-instantaneous training, XGBoost represents a practical, deployable solution for NYISO's forecasting challenges.
 
 ---
-
-# Comprehensive Visual Performance Summary
-
-## Model Performance Comparison Gallery
-
-### XGBoost: Industry-Leading Performance
-
-<div align="center">
-
-![XGBoost Baseline Performance](2_FIGURES/FIGURES/3_xg_boost_baseline_performance.png)
-*XGBoost achieves <0.4% MAPE at 5-minute and 15-minute resolutions, <2% at hourly*
-
-![NYISO vs Fused Model Comparison](2_FIGURES/FIGURES/3_xg_boost_model_comparison.png)
-*Weather fusion dramatically improves coarse-scale accuracy: Daily MAPE reduced from 4.77% → 3.11%*
-
-</div>
-
-### SVR: Comparative Analysis Across Time Scales
-
-<div align="center">
-
-**Interactive Animation Grid - Live Model Performance Tracking**
-
-<table>
-  <tr>
-    <td align="center"><img src="2_FIGURES/FIGURES/svr_animations/svr_5min_animation.gif" width="250"/><br/><b>5-Min</b><br/><sub>MAPE: 0.28%</sub></td>
-    <td align="center"><img src="2_FIGURES/FIGURES/svr_animations/svr_15min_animation.gif" width="250"/><br/><b>15-Min</b><br/><sub>MAPE: ~0.35%</sub></td>
-    <td align="center"><img src="2_FIGURES/FIGURES/svr_animations/svr_hourly_animation.gif" width="250"/><br/><b>Hourly</b><br/><sub>MAPE: 0.28%</sub></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="2_FIGURES/FIGURES/svr_animations/svr_hourly_trunc_animation.gif" width="250"/><br/><b>Hourly (Trunc)</b><br/><sub>Reduced Set</sub></td>
-    <td align="center"><img src="2_FIGURES/FIGURES/svr_animations/svr_daily_weather_animation.gif" width="250"/><br/><b>Daily + Weather</b><br/><sub>MAPE: ~3.5%</sub></td>
-    <td align="center"><img src="2_FIGURES/FIGURES/svr_animations/svr_daily_loadonly_animation.gif" width="250"/><br/><b>Daily Load-Only</b><br/><sub>MAPE: ~5.2%</sub></td>
-  </tr>
-</table>
-
-🔵 True Load | 🔴 Predictions
-
-</div>
-
-**Performance Summary by Time Scale:**
-
-| Model Variant | MAPE | Training Time | Full Interactive Notebook |
-|---------------|------|---------------|---------------------------|
-| 5-Minute SVR | 0.28% | ~5 hours | [SVMMinute.ipynb](3_OUTPUT/3_svr/SVMMinute.ipynb) |
-| 15-Minute SVR | ~0.35% | ~4 hours | [SVM15Min.ipynb](3_OUTPUT/3_svr/SVM15Min.ipynb) |
-| Hourly SVR | ~0.28% | ~5 hours | [SVMHourly.ipynb](3_OUTPUT/3_svr/SVMHourly.ipynb) |
-| Hourly SVR (Truncated) | N/A | ~2 hours | [SVM_Trunc.ipynb](3_OUTPUT/3_svr/SVM_Trunc.ipynb) |
-| Daily SVR (Weather) | ~3.5% | ~2 hours | [SVMDaily.ipynb](3_OUTPUT/3_svr/SVMDaily.ipynb) |
-| Daily SVR (Load-Only) | ~5.2% | ~1.5 hours | [SVMDailywoutMeso.ipynb](3_OUTPUT/3_svr/SVMDailywoutMeso.ipynb) |
-
-### Historical Load Patterns
-
-<div align="center">
-
-![NY Zones Map](2_FIGURES/FIGURES/nyiso_zones.png)  
-*NYISO Geographic Service Zones - 11 distinct zones with varying load profiles*
-
-![2023 15-Minute Load](2_FIGURES/FIGURES/total_load_2023_15min.png)  
-*High-resolution 2023 load data revealing diurnal and weekly patterns*
-
-![January 2023 Daily](2_FIGURES/FIGURES/day_by_day_jan_2023.png)  
-*January 2023 day-by-day comparison showing weather-driven load variations*
-
-![2023 Annual Load Trend](2_FIGURES/FIGURES/2023_total_load_per_day.png)  
-*Complete 2023 daily load profile with clear seasonal patterns*
-
-![Top 10 Zones](2_FIGURES/FIGURES/2023_top10_names_avg_load.png)  
-*Zone-level load distribution highlighting NYC metropolitan dominance*
-
-</div>
-
-### Model Behavior Analysis
-
-![SVR Confusion During Jumps](2_FIGURES/FIGURES/svr_readme_graph.png)  
-*SVR model struggle: Demonstrates prediction lag during rapid load transitions (red circles)*
-
-**Key Visual Insights:**
-
-1. **XGBoost Dominance**: Baseline performance chart shows consistent sub-1% MAPE at fine time scales
-2. **Weather Integration Value**: Comparison chart proves MesoNet fusion reduces daily MAPE by 35%
-3. **SVR Limitations**: Animations reveal tracking delays during volatility despite overall low MAPE
-4. **Seasonal Patterns**: Annual load charts confirm summer cooling and winter heating peaks
-5. **Geographic Distribution**: NYC zones account for >60% of total state load
-
-**Visualization Availability:**
-- **Static Charts**: All PNG files viewable directly in this README and centralized in [2_FIGURES/FIGURES](2_FIGURES/FIGURES/)
-- **Interactive Animations**: Available in Jupyter notebooks (`.ipynb` files) in [3_OUTPUT/3_svr/](3_OUTPUT/3_svr/)
-- **Raw Data**: Summary statistics in CSV format in [2_FIGURES/FIGURES/](2_FIGURES/FIGURES/) and [3_OUTPUT/3_xg_boost/](3_OUTPUT/3_xg_boost/)
-- **Export Manifest**: Complete inventory of all figures in [export_manifest.json](2_FIGURES/FIGURES/export_manifest.json)
-
----
-
-## Reproducibility and Workflow Documentation
-
-### Figure Exports
-
-All project visualizations are centralized and can be regenerated using:
-
-```bash
-cd C:\Users\Matt\Desktop\CS506\CS506_Project
-python Build/export_figures_simple.py
-```
-
-**Export Script Features:**
-- ✅ **Absolute paths**: Uses `C:\Users\Matt\Desktop\CS506\CS506_Project` as project root for full reproducibility
-- ✅ **Automated collection**: Gathers all PNG/GIF files from notebooks and output directories
-- ✅ **Standardized naming**: Prefixes files by source (e.g., `3_xg_boost_baseline_performance.png`)
-- ✅ **Manifest generation**: Creates JSON catalog of all exported files with metadata
-- ✅ **Preserves originals**: Copies files without modifying sources
-
-**Export Output:**
-```
-2_FIGURES/FIGURES/
-├── nyiso_zones.png                           # Geographic zones map
-├── total_load_2023_15min.png                 # 2023 15-minute resolution data
-├── day_by_day_jan_2023.png                   # January 2023 daily patterns
-├── load_with_losses.png                      # System load with losses
-├── 2023_total_load_per_day.png              # Annual load trends
-├── 2023_top10_names_avg_load.png            # Top zones by consumption
-├── 3_xg_boost_baseline_performance.png      # XGBoost performance chart
-├── 3_xg_boost_model_comparison.png          # NYISO vs Fused comparison
-├── export_manifest.json                      # Complete file inventory
-└── svr_animations/
-    ├── svr_5min_animation.gif
-    ├── svr_15min_animation.gif
-    ├── svr_hourly_animation.gif
-    ├── svr_hourly_trunc_animation.gif
-    ├── svr_daily_weather_animation.gif
-    └── svr_daily_loadonly_animation.gif
-```
-
-### Model Execution and Training
-
-All visualizations are reproducible via documented workflows:
-- **Data Processing**: [1st_pass.ipynb](2_FIGURES/1_data_wrangling/1st_pass.ipynb)
-- **Model Training**: Individual model notebooks in [3_OUTPUT/](3_OUTPUT/)
-- **Figure Export**: [Build/export_figures_simple.py](Build/export_figures_simple.py)
-- **GitHub Actions**: Automated workflow testing in `.github/workflows/`
-
-For complete setup and execution instructions, see [Workflow_README.md](.github/workflows/Workflow_README.md).
