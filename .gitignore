@@ -27,3 +27,5 @@ venv/
 
 # Logs
 model_results.log
+
+.vscode

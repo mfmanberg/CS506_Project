@@ -79,6 +79,11 @@ def get_master_parquet_path():
     master_path = root / '1_LIB' / 'master' / 'master.parquet'
     return master_path
 
+def get_master_total_parquet_path():
+    """Get the path to master.parquet file."""
+    root = get_project_root()
+    master_path = root / '1_LIB' / 'master' / 'master_totalload.parquet'
+    return master_path
 
 def get_data_path(*subdirs):
     """
@@ -117,6 +122,7 @@ def get_output_path(*subdirs):
 # Convenience constants
 PROJECT_ROOT = get_project_root()
 MASTER_PARQUET = get_master_parquet_path()
+MASTER_TOTAL_PARQUET = get_master_total_parquet_path()
 DATA_DIR = PROJECT_ROOT / '1_LIB'
 OUTPUT_DIR = PROJECT_ROOT / '3_OUTPUT'
 
