@@ -10,8 +10,9 @@ All project figures, charts, and animations are centralized in [2_FIGURES/FIGURE
 
 **Available Visualizations:**
 - 📊 **Static Charts**: 11 PNG images including model performance comparisons, load patterns, geographic zone maps, and archived baseline metrics
-- 🎬 **Animated GIFs**: 7 animations including:
+- 🎬 **Animated GIFs**: 9 animations including:
   - 1 multi-year load evolution animation (2020-2025) with significant event markers
+  - 2 multi-model comparison animations (2023 and 2020-2025) showing Linear Regression, XGBoost, and SVR performance
   - 6 SVR model animations showing real-time prediction tracking across different time scales
 - 📄 **Data Tables**: CSV files with statistical summaries and performance metrics
 - 📋 **Export Manifest**: Complete catalog of all exported figures in [export_manifest.json](2_FIGURES/FIGURES/export_manifest.json)
@@ -27,6 +28,41 @@ This script:
 - Uses absolute paths for full reproducibility
 - Generates a complete manifest of all exported files
 - Organizes figures by category (data exploration, model outputs, SVR animations)
+
+### Complete Figure Inventory
+
+**Static Visualizations (PNG):**
+1. [nyiso_zones.png](2_FIGURES/FIGURES/nyiso_zones.png) - NYISO geographic service zones map
+2. [total_load_2023_15min.png](2_FIGURES/FIGURES/total_load_2023_15min.png) - 2023 load at 15-minute resolution
+3. [day_by_day_jan_2023.png](2_FIGURES/FIGURES/day_by_day_jan_2023.png) - January 2023 daily patterns
+4. [load_with_losses.png](2_FIGURES/FIGURES/load_with_losses.png) - System load including transmission losses
+5. [2023_total_load_per_day.png](2_FIGURES/FIGURES/2023_total_load_per_day.png) - 2023 daily aggregated load
+6. [2023_top10_names_avg_load.png](2_FIGURES/FIGURES/2023_top10_names_avg_load.png) - Top 10 zones by average load
+7. [3_xg_boost_baseline_performance.png](2_FIGURES/FIGURES/3_xg_boost_baseline_performance.png) - XGBoost performance metrics
+8. [3_xg_boost_model_comparison.png](2_FIGURES/FIGURES/3_xg_boost_model_comparison.png) - NYISO vs Fused model comparison
+9. [svr_readme_graph.png](2_FIGURES/FIGURES/svr_readme_graph.png) - SVR model performance visualization
+10. [vault_baseline_performance.png](2_FIGURES/FIGURES/vault_baseline_performance.png) - Archived baseline metrics
+11. [vault_model_comparison.png](2_FIGURES/FIGURES/vault_model_comparison.png) - Archived model comparison
+
+**Animated Visualizations (GIF):**
+1. [multi_year_load_evolution.gif](2_FIGURES/FIGURES/multi_year_load_evolution.gif) - 2020-2025 load evolution with spline
+2. [model_comparison_2023.gif](2_FIGURES/FIGURES/model_comparison_2023.gif) - 2023 multi-model comparison
+3. [model_comparison_2020_2025_with_events.gif](2_FIGURES/FIGURES/model_comparison_2020_2025_with_events.gif) - Multi-year model comparison with event markers
+4. [svr_5min_animation.gif](2_FIGURES/FIGURES/svr_animations/svr_5min_animation.gif) - SVR 5-minute predictions
+5. [svr_15min_animation.gif](2_FIGURES/FIGURES/svr_animations/svr_15min_animation.gif) - SVR 15-minute predictions
+6. [svr_hourly_animation.gif](2_FIGURES/FIGURES/svr_animations/svr_hourly_animation.gif) - SVR hourly predictions
+7. [svr_hourly_trunc_animation.gif](2_FIGURES/FIGURES/svr_animations/svr_hourly_trunc_animation.gif) - SVR hourly truncated
+8. [svr_daily_weather_animation.gif](2_FIGURES/FIGURES/svr_animations/svr_daily_weather_animation.gif) - SVR daily with weather
+9. [svr_daily_loadonly_animation.gif](2_FIGURES/FIGURES/svr_animations/svr_daily_loadonly_animation.gif) - SVR daily load-only
+
+**Data Files (CSV):**
+1. [2023_daily_total_load.csv](2_FIGURES/FIGURES/2023_daily_total_load.csv) - Daily aggregated load data for 2023
+2. [2023_summary_stats.csv](2_FIGURES/FIGURES/2023_summary_stats.csv) - Statistical summaries for 2023
+3. [2023_top10_names_avg_load.csv](2_FIGURES/FIGURES/2023_top10_names_avg_load.csv) - Top zones data
+
+**Metadata:**
+- [export_manifest.json](2_FIGURES/FIGURES/export_manifest.json) - Complete export catalog with timestamps
+- [FIGURES_README.md](2_FIGURES/FIGURES/FIGURES_README.md) - Detailed figure documentation
 
 **Description of the project**
 
@@ -90,6 +126,14 @@ These visualizations were created during initial data exploration to understand 
 
 ![Multi-Year Load Evolution](2_FIGURES/FIGURES/multi_year_load_evolution.gif)
 *Animated visualization showing the progressive evolution of New York's total electrical load from 2020-2025 with smoothing spline trend overlay. Key pandemic markers (COVID-19 start and emergency end) are displayed as labeled vertical lines. The Y-axis starts at 2000 MW for enhanced visibility of load variations. This animation reveals seasonal patterns, long-term trends, and the impact of major events on electricity demand. The spline curve (red) shows the overall multi-year trend, while individual year traces show detailed daily fluctuations.*
+
+### Model Comparison Animations
+
+![Model Comparison 2023](2_FIGURES/FIGURES/model_comparison_2023.gif)
+*Animated comparison of Linear Regression, XGBoost, and SVR predictions vs actual load for 2023. Shows rolling 30-day MAPE calculations for each model, demonstrating XGBoost's superior performance with consistently low error rates.*
+
+![Model Comparison 2020-2025 with Events](2_FIGURES/FIGURES/model_comparison_2020_2025_with_events.gif)
+*Multi-year animated comparison (2020-2025) showing all three models tracking actual load through major events including COVID-19 pandemic, heat waves, winter storms, and wildfire smoke impacts. Event markers are labeled with dates and descriptions. Rolling MAPE calculations reveal each model's resilience to volatility and regime changes.*
 
 ### Static Load Pattern Visualizations
 
